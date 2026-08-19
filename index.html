@@ -1,0 +1,3766 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#050607" />
+  <title>Algorana — кейс AI-продукта</title>
+  <style>
+    :root {
+      --paper: #050607;
+      --paper-2: #08090b;
+      --ink: #f7f8f8;
+      --body: rgba(255,255,255,.78);
+      --secondary: rgba(255,255,255,.58);
+      --muted: rgba(255,255,255,.30);
+      --hairline: rgba(255,255,255,.10);
+      --mint: #00e39d;
+      --blue: #3384ff;
+      --violet: #7c5cff;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Roboto, Oxygen, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { background: #111316; color-scheme: dark; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #111316;
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      font-feature-settings: "ss01" 1, "cv11" 1;
+    }
+
+    .casebook {
+      display: grid;
+      gap: 26px;
+      padding: 26px 0 64px;
+    }
+
+    .page {
+      position: relative;
+      isolation: isolate;
+      width: min(794px, calc(100vw - 32px));
+      aspect-ratio: 210 / 297;
+      min-height: 1123px;
+      margin: 0 auto;
+      overflow: hidden;
+      padding: 48px 54px 42px;
+      background:
+        radial-gradient(circle at 96% 3%, rgba(0,227,157,.055), transparent 19rem),
+        linear-gradient(135deg, rgba(255,255,255,.012), transparent 33%),
+        var(--paper);
+      border: 1px solid rgba(255,255,255,.06);
+      box-shadow: 0 28px 70px rgba(0,0,0,.35);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      opacity: .18;
+      pointer-events: none;
+      background-image: linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
+      background-size: 88px 100%;
+      mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+    }
+
+    .running-head,
+    .running-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      flex: 0 0 auto;
+      color: var(--secondary);
+      font-size: 9px;
+      line-height: 1;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .running-head {
+      min-height: 28px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .running-foot {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .logo {
+      display: block;
+      width: 153px;
+      height: auto;
+    }
+
+    .signal {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .signal::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 14px rgba(0,227,157,.42);
+    }
+
+    .page-content {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 35px 0 30px;
+    }
+
+    h1, h2, h3, h4, p, figure { margin-top: 0; }
+
+    h1, h2, h3 {
+      color: var(--ink);
+      font-weight: 560;
+      letter-spacing: -.04em;
+      text-wrap: balance;
+    }
+
+    h1 {
+      max-width: 660px;
+      font-size: 39px;
+      line-height: 1.03;
+      margin-bottom: 22px;
+    }
+
+    h2 {
+      max-width: 620px;
+      font-size: 30px;
+      line-height: 1.06;
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      font-size: 18px;
+      line-height: 1.12;
+      margin-bottom: 9px;
+    }
+
+    h4 {
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.25;
+      letter-spacing: -.01em;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    p {
+      color: var(--body);
+      font-size: 14px;
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+
+    p:last-child { margin-bottom: 0; }
+
+    strong {
+      color: var(--ink);
+      font-weight: 580;
+    }
+
+    .kicker {
+      color: var(--mint);
+      font-size: 9px;
+      line-height: 1.2;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .standfirst {
+      max-width: 635px;
+      color: var(--body);
+      font-size: 16px;
+      line-height: 1.48;
+      letter-spacing: -.012em;
+    }
+
+    .hairline {
+      height: 1px;
+      background: var(--hairline);
+    }
+
+    .caption {
+      color: var(--secondary);
+      font-size: 10.5px;
+      line-height: 1.45;
+      letter-spacing: .04em;
+    }
+
+    .caption b { color: var(--ink); font-weight: 600; }
+
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 34px;
+    }
+
+    .columns--wide-left { grid-template-columns: 1.15fr .85fr; }
+    .columns--wide-right { grid-template-columns: .84fr 1.16fr; }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      color: var(--secondary);
+      font-size: 9px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .section-label span {
+      color: var(--mint);
+      font-weight: 700;
+    }
+
+    /* Page 1 */
+    .opening .page-content {
+      padding-top: 42px;
+    }
+
+    .opening h1 span { color: var(--mint); }
+
+    .opening-summary {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 35px;
+      margin-top: 34px;
+      padding-top: 26px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .hero-number {
+      padding-left: 22px;
+      border-left: 1px solid var(--mint);
+    }
+
+    .hero-number__value {
+      color: var(--ink);
+      font-size: 61px;
+      line-height: .82;
+      letter-spacing: -.07em;
+      font-weight: 580;
+      margin-bottom: 13px;
+    }
+
+    .hero-number__value span { color: var(--mint); }
+
+    .hero-number p {
+      color: var(--secondary);
+      font-size: 11px;
+      line-height: 1.48;
+    }
+
+    .facts-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 34px;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .fact {
+      min-height: 96px;
+      padding: 17px 14px 14px 0;
+      border-right: 1px solid var(--hairline);
+    }
+
+    .fact:not(:first-child) { padding-left: 14px; }
+    .fact:last-child { border-right: 0; }
+
+    .fact__value {
+      display: block;
+      color: var(--ink);
+      font-size: 23px;
+      line-height: 1;
+      letter-spacing: -.04em;
+      font-weight: 580;
+      margin-bottom: 9px;
+    }
+
+    .fact:nth-child(2) .fact__value { color: var(--mint); }
+
+    .fact__label {
+      color: var(--secondary);
+      font-size: 8.5px;
+      line-height: 1.35;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    /* Page 2 */
+    .journey-map {
+      position: relative;
+      display: grid;
+      gap: 0;
+      margin-top: 20px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .journey-step {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 17px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .journey-step__index {
+      color: var(--mint);
+      font-size: 10px;
+      letter-spacing: .13em;
+      padding-top: 2px;
+    }
+
+    .journey-step p {
+      color: var(--secondary);
+      font-size: 11px;
+      line-height: 1.48;
+    }
+
+    .margin-note {
+      padding: 17px 0 17px 18px;
+      border-left: 2px solid var(--mint);
+      margin-bottom: 23px;
+    }
+
+    .margin-note p {
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.42;
+      letter-spacing: -.018em;
+    }
+
+    .market-facts {
+      display: grid;
+      gap: 13px;
+      margin-top: 19px;
+    }
+
+    .market-fact {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 11px;
+      padding-top: 13px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .market-fact__dot {
+      width: 7px;
+      height: 7px;
+      margin-top: 5px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 12px rgba(0,227,157,.3);
+    }
+
+    .market-fact p {
+      color: var(--secondary);
+      font-size: 11px;
+      line-height: 1.48;
+    }
+
+    .ownership-band {
+      margin-top: 31px;
+      padding: 22px 0 0;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .ownership-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 13px;
+    }
+
+    .ownership-list span {
+      padding: 7px 10px;
+      border: 1px solid var(--hairline);
+      border-radius: 999px;
+      color: var(--body);
+      font-size: 9px;
+      letter-spacing: .03em;
+      background: rgba(255,255,255,.012);
+    }
+
+    /* Page 3 */
+    .system-figure {
+      margin: 22px 0 28px;
+      padding: 22px 0;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .system-flow {
+      display: grid;
+      grid-template-columns: 1fr 32px 1.24fr 32px 1fr;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .system-node {
+      min-height: 154px;
+      padding: 15px;
+      background: rgba(255,255,255,.015);
+      border: 1px solid var(--hairline);
+    }
+
+    .system-node__tag {
+      color: var(--mint);
+      font-size: 8px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .system-node p {
+      color: var(--secondary);
+      font-size: 10px;
+      line-height: 1.46;
+    }
+
+    .system-node__detail {
+      margin-top: 10px;
+      color: var(--body);
+      font-size: 8.5px;
+      line-height: 1.5;
+    }
+
+    .system-arrow {
+      position: relative;
+      align-self: center;
+      height: 1px;
+      background: linear-gradient(90deg, var(--hairline), var(--mint));
+    }
+
+    .system-arrow::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: -3px;
+      width: 7px;
+      height: 7px;
+      border-top: 1px solid var(--mint);
+      border-right: 1px solid var(--mint);
+      transform: rotate(45deg);
+    }
+
+    .technical-notes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .technical-note {
+      padding-top: 12px;
+      border-top: 2px solid var(--mint);
+    }
+
+    .technical-note p {
+      color: var(--secondary);
+      font-size: 10px;
+      line-height: 1.46;
+    }
+
+    .provider-story {
+      padding-right: 22px;
+      border-right: 1px solid var(--hairline);
+    }
+
+    .economics {
+      padding-left: 2px;
+    }
+
+    .economics-number {
+      color: var(--mint);
+      font-size: 56px;
+      line-height: .9;
+      letter-spacing: -.06em;
+      font-weight: 580;
+      margin: 5px 0 13px;
+    }
+
+    .compute-stack {
+      margin-top: 19px;
+      display: grid;
+      gap: 0;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .compute-row {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 13px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--hairline);
+      color: var(--secondary);
+      font-size: 9.5px;
+      line-height: 1.42;
+    }
+
+    .compute-row b {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* Page 4 */
+    .load-story {
+      display: grid;
+      grid-template-columns: .82fr 1.18fr;
+      gap: 32px;
+      margin-top: 22px;
+      padding: 23px 0 26px;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .load-numbers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: end;
+      gap: 16px;
+      min-height: 180px;
+      padding: 20px 18px 0;
+      background:
+        repeating-linear-gradient(to top, rgba(255,255,255,.055) 0 1px, transparent 1px 44px),
+        rgba(255,255,255,.009);
+      border: 1px solid var(--hairline);
+    }
+
+    .load-column {
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      text-align: center;
+      color: var(--secondary);
+      font-size: 8px;
+      line-height: 1.25;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .load-bar {
+      display: grid;
+      place-items: start center;
+      padding-top: 8px;
+      margin-bottom: 8px;
+      border-radius: 5px 5px 0 0;
+      background: rgba(255,255,255,.12);
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 650;
+      letter-spacing: -.03em;
+    }
+
+    .load-column:nth-child(1) .load-bar { height: 28px; }
+    .load-column:nth-child(2) .load-bar { height: 90px; background: linear-gradient(to top, rgba(0,227,157,.15), rgba(0,227,157,.78)); }
+    .load-column:nth-child(3) .load-bar { height: 146px; background: linear-gradient(to top, rgba(124,92,255,.18), rgba(124,92,255,.88)); }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+      margin-top: 30px;
+    }
+
+    .result {
+      min-height: 145px;
+      padding: 19px 14px 16px 0;
+      border-right: 1px solid var(--hairline);
+    }
+
+    .result:not(:first-child) { padding-left: 14px; }
+    .result:last-child { border-right: 0; }
+
+    .result__value {
+      color: var(--ink);
+      font-size: 31px;
+      line-height: 1;
+      letter-spacing: -.05em;
+      font-weight: 580;
+      margin-bottom: 11px;
+    }
+
+    .result:nth-child(2) .result__value { color: var(--mint); }
+
+    .result p {
+      color: var(--secondary);
+      font-size: 9.5px;
+      line-height: 1.48;
+    }
+
+    .closing {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 36px;
+      margin-top: 31px;
+    }
+
+    .closing-statement {
+      color: var(--ink);
+      font-size: 20px;
+      line-height: 1.35;
+      letter-spacing: -.025em;
+      padding-left: 17px;
+      border-left: 2px solid var(--mint);
+    }
+
+    .closing-note p {
+      color: var(--secondary);
+      font-size: 10.5px;
+      line-height: 1.48;
+    }
+
+    /* Narrative casebook v2 */
+    .story-bridge {
+      margin-top: 27px;
+      padding: 18px 0 0 18px;
+      border-top: 1px solid var(--hairline);
+      border-left: 2px solid var(--mint);
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 1.42;
+      letter-spacing: -.02em;
+    }
+
+    .origin-track {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 30px;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .origin-step {
+      position: relative;
+      min-height: 118px;
+      padding: 18px 18px 16px 0;
+      border-right: 1px solid var(--hairline);
+    }
+
+    .origin-step:not(:first-child) { padding-left: 18px; }
+    .origin-step:last-child { border-right: 0; }
+    .origin-step__year { color: var(--mint); font-size: 10px; letter-spacing: .15em; text-transform: uppercase; margin-bottom: 10px; }
+    .origin-step__value { color: var(--ink); font-size: 31px; line-height: 1; letter-spacing: -.05em; font-weight: 580; margin-bottom: 10px; }
+    .origin-step:first-child .origin-step__value { color: var(--mint); }
+    .origin-step h3 { font-size: 16px; }
+    .origin-step p { color: var(--secondary); font-size: 11px; line-height: 1.5; }
+
+    .experiment-loop {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 27px;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .experiment-step {
+      position: relative;
+      min-height: 150px;
+      padding: 18px 17px 16px 0;
+      border-right: 1px solid var(--hairline);
+    }
+
+    .experiment-step:not(:first-child) { padding-left: 17px; }
+    .experiment-step:last-child { border-right: 0; }
+    .experiment-step:not(:last-child)::after { content: "→"; position: absolute; right: -9px; top: 61px; z-index: 2; width: 18px; height: 18px; display: grid; place-items: center; color: var(--mint); background: var(--paper); }
+    .experiment-step__index { color: var(--mint); font-size: 9px; letter-spacing: .14em; margin-bottom: 20px; }
+    .experiment-step h3 { font-size: 16px; }
+    .experiment-step p { color: var(--secondary); font-size: 10.5px; line-height: 1.46; }
+
+    .monetization-story {
+      display: grid;
+      grid-template-columns: .74fr 1.26fr;
+      gap: 30px;
+      margin-top: 27px;
+      padding-top: 22px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .monetization-story__lead { color: var(--ink); font-size: 19px; line-height: 1.36; letter-spacing: -.025em; }
+    .monetization-path { display: grid; gap: 0; border-top: 1px solid var(--hairline); }
+    .monetization-step { display: grid; grid-template-columns: 70px 1fr; gap: 13px; padding: 12px 0; border-bottom: 1px solid var(--hairline); }
+    .monetization-step__stage { color: var(--mint); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; padding-top: 2px; }
+    .monetization-step b { display: block; color: var(--ink); font-size: 11px; margin-bottom: 4px; }
+    .monetization-step span { display: block; color: var(--secondary); font-size: 9.5px; line-height: 1.42; }
+
+    .legacy-story {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 30px;
+      margin-top: 26px;
+      padding: 20px 0;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .legacy-story__statement { color: var(--ink); font-size: 18px; line-height: 1.38; letter-spacing: -.022em; padding-left: 17px; border-left: 2px solid var(--mint); }
+    .legacy-story p { font-size: 10.5px; line-height: 1.48; }
+
+    .decision-chain {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 28px;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .decision {
+      min-height: 232px;
+      padding: 20px 20px 18px 0;
+      border-right: 1px solid var(--hairline);
+    }
+
+    .decision:not(:first-child) { padding-left: 20px; }
+    .decision:last-child { border-right: 0; }
+    .decision__index { color: var(--mint); font-size: 10px; letter-spacing: .14em; margin-bottom: 28px; }
+    .decision__signal { color: var(--secondary); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px; }
+    .decision h3 { font-size: 19px; }
+    .decision p { font-size: 12px; line-height: 1.52; }
+    .decision__proof { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--hairline); color: var(--secondary); font-size: 10px; line-height: 1.45; }
+
+    .ownership-line {
+      display: grid;
+      grid-template-columns: .72fr 1.28fr;
+      gap: 30px;
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .ownership-line__statement { color: var(--ink); font-size: 19px; line-height: 1.36; letter-spacing: -.025em; }
+    .ownership-line__scope { display: flex; flex-wrap: wrap; align-content: start; gap: 7px; }
+    .ownership-line__scope span { padding: 6px 9px; color: var(--body); border: 1px solid var(--hairline); border-radius: 999px; font-size: 9px; }
+
+    .promise-band {
+      margin-top: 24px;
+      padding: 17px 19px;
+      border: 1px solid rgba(0,227,157,.22);
+      background: rgba(0,227,157,.035);
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 1.42;
+      letter-spacing: -.018em;
+    }
+
+    .lane-diagram {
+      margin: 23px 0;
+      padding: 20px 0;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .lane {
+      display: grid;
+      grid-template-columns: 86px repeat(3, 1fr);
+      align-items: stretch;
+    }
+
+    .lane + .lane { margin-top: 10px; }
+    .lane__label { display: flex; align-items: center; color: var(--mint); font-size: 9px; letter-spacing: .13em; text-transform: uppercase; font-weight: 700; }
+    .lane__step { position: relative; min-height: 94px; padding: 13px 14px; border: 1px solid var(--hairline); background: rgba(255,255,255,.012); }
+    .lane__step + .lane__step { border-left: 0; }
+    .lane__step:not(:last-child)::after { content: "→"; position: absolute; z-index: 2; right: -10px; top: 35px; width: 19px; height: 19px; display: grid; place-items: center; color: var(--mint); background: var(--paper); font-size: 14px; }
+    .lane__step b { display: block; color: var(--ink); font-size: 11px; margin-bottom: 6px; }
+    .lane__step span { display: block; color: var(--secondary); font-size: 9px; line-height: 1.42; }
+    .lane__step--split { background: linear-gradient(135deg, rgba(0,227,157,.035), rgba(124,92,255,.025)); }
+
+    .assurance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-top: 23px;
+    }
+
+    .assurance { padding-top: 14px; border-top: 2px solid var(--mint); }
+    .assurance h3 { font-size: 16px; }
+    .assurance p { font-size: 11px; line-height: 1.5; }
+
+    .financial-scope {
+      display: grid;
+      grid-template-columns: .96fr 1.04fr;
+      gap: 30px;
+      align-items: stretch;
+      margin-top: 21px;
+    }
+
+    .financial-scope__saga,
+    .financial-scope__billing {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      padding-top: 14px;
+      border-top: 2px solid var(--mint);
+    }
+
+    .financial-scope .section-label {
+      min-height: 24px;
+      align-items: flex-start;
+      line-height: 1.3;
+    }
+
+    .financial-scope .section-label span { flex: 0 0 auto; }
+
+    .financial-scope h3 {
+      min-height: 54px;
+      margin-bottom: 0;
+      font-size: 18px;
+      line-height: 1.28;
+    }
+
+    .saga-benefits {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .saga-benefit {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .saga-benefit__label {
+      margin-bottom: 5px;
+      color: var(--mint);
+      font-size: 8.5px;
+      line-height: 1;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .saga-benefit b { display: block; color: var(--ink); font-size: 11px; margin-bottom: 4px; }
+    .saga-benefit p { color: var(--secondary); font-size: 9.7px; line-height: 1.46; }
+
+    .saga-impact {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 11px;
+      align-items: center;
+      min-height: 74px;
+      margin-top: 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(0,227,157,.22);
+      background: rgba(0,227,157,.028);
+    }
+
+    .saga-impact b { color: var(--ink); font-size: 20px; line-height: 1; white-space: nowrap; }
+    .saga-impact span { color: var(--body); font-size: 9px; line-height: 1.42; }
+
+    .billing-modes {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .billing-mode {
+      display: grid;
+      flex: 1;
+      grid-template-columns: 94px 1fr;
+      gap: 13px;
+      align-content: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .billing-mode__name {
+      color: var(--mint);
+      font-size: 9px;
+      line-height: 1.35;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .billing-mode b { display: block; color: var(--ink); font-size: 10.5px; margin-bottom: 3px; }
+    .billing-mode span { display: block; color: var(--secondary); font-size: 9.5px; line-height: 1.42; }
+
+    .balance-assurance {
+      display: flex;
+      min-height: 74px;
+      flex-direction: column;
+      justify-content: center;
+      margin-top: 14px;
+      padding: 10px 13px;
+      border: 1px solid rgba(0,227,157,.22);
+      background: rgba(0,227,157,.028);
+    }
+
+    .balance-assurance b { display: block; color: var(--ink); font-size: 11px; margin-bottom: 4px; }
+    .balance-assurance span { display: block; color: var(--body); font-size: 9.5px; line-height: 1.46; }
+
+    .finance-page .page-content { padding-top: 30px; }
+    .finance-page h2 { font-size: 29px; margin-bottom: 12px; }
+    .finance-page .promise-band { margin-top: 17px; padding: 14px 17px; }
+    .finance-page .lane-diagram { margin: 16px 0; padding: 16px 0; }
+    .finance-page .lane__step { min-height: 84px; padding: 11px 13px; }
+    .finance-page .lane__step:not(:last-child)::after { top: 30px; }
+    .finance-page .financial-scope { margin-top: 14px; }
+    .finance-page .billing-mode { padding: 7px 0; }
+    .infra-page .page-content { padding-top: 32px; }
+    .infra-page h2 { max-width: 660px; font-size: 31px; margin-bottom: 13px; }
+    .infra-page .standfirst { max-width: 660px; }
+
+    .gpu-strategy {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 22px;
+    }
+
+    .gpu-result,
+    .routing-card,
+    .runpod-story,
+    .gpu-scale-story {
+      min-width: 0;
+      padding: 17px 19px;
+      border: 1px solid var(--hairline);
+      background: rgba(255,255,255,.012);
+    }
+
+    .runpod-story {
+      border-color: rgba(0,227,157,.28);
+      background: linear-gradient(145deg, rgba(0,227,157,.055), rgba(255,255,255,.008));
+    }
+
+    .runpod-proof {
+      margin-top: 11px;
+      padding-top: 9px;
+      border-top: 1px solid rgba(0,227,157,.2);
+    }
+
+    .runpod-proof b { display: block; color: var(--ink); font-size: 10.5px; line-height: 1.35; margin-bottom: 3px; }
+    .runpod-proof span { display: block; color: var(--secondary); font-size: 8.3px; line-height: 1.4; }
+
+    .gpu-result h3,
+    .routing-card h3,
+    .runpod-story h3,
+    .gpu-scale-story h3 { max-width: none; font-size: 18px; line-height: 1.25; }
+
+    .gpu-result > p,
+    .routing-card > p,
+    .runpod-story p,
+    .gpu-scale-story p { color: var(--body); font-size: 9.6px; line-height: 1.46; }
+
+    .infra-journey { margin-top: 13px; border-top: 1px solid rgba(0,227,157,.22); }
+
+    .journey-step {
+      display: grid;
+      grid-template-columns: 21px 1fr auto;
+      gap: 9px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(0,227,157,.16);
+    }
+
+    .journey-step__index { color: var(--mint); font-size: 8px; letter-spacing: .1em; }
+    .journey-step b { display: block; color: var(--ink); font-size: 10px; margin-bottom: 2px; }
+    .journey-step span { display: block; color: var(--secondary); font-size: 8px; line-height: 1.34; }
+    .journey-step strong { color: var(--mint); font-size: 20px; line-height: 1; letter-spacing: -.04em; white-space: nowrap; }
+
+    .model-types { margin-top: 12px; border-top: 1px solid rgba(0,227,157,.22); }
+
+    .model-type {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(0,227,157,.16);
+    }
+
+    .model-type__label { color: var(--mint); font-size: 8px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 5px; }
+    .model-type b { display: block; color: var(--ink); font-size: 10.5px; line-height: 1.35; margin-bottom: 3px; }
+    .model-type > span { display: block; color: var(--secondary); font-size: 8.3px; line-height: 1.38; }
+
+    .model-chain { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+    .model-chain span { padding: 4px 6px; border: 1px solid rgba(0,227,157,.2); color: var(--body); font-size: 7.5px; line-height: 1; }
+
+    .gpu-scale-story .gpu-result__metric { margin: 8px 0; padding: 9px 0; }
+
+    .gpu-result__metric {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 13px;
+      align-items: center;
+      margin: 16px 0 13px;
+      padding: 13px 0;
+      border-top: 1px solid rgba(0,227,157,.22);
+      border-bottom: 1px solid rgba(0,227,157,.22);
+    }
+
+    .gpu-result__metric b { color: var(--mint); font-size: 45px; line-height: .9; letter-spacing: -.07em; font-weight: 580; }
+    .gpu-result__metric span { display: block; color: var(--ink); font-size: 10.5px; line-height: 1.32; }
+    .gpu-result__metric small { display: block; margin-top: 3px; color: var(--secondary); font-size: 7.8px; line-height: 1.3; }
+
+    .cluster-route {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr);
+      gap: 7px;
+      align-items: stretch;
+      margin-top: 7px;
+    }
+
+    .cluster-route__node {
+      padding: 6px 8px;
+      border: 1px solid var(--hairline);
+      background: rgba(255,255,255,.012);
+    }
+
+    .cluster-route__node small {
+      display: block;
+      color: var(--mint);
+      font-size: 7.2px;
+      line-height: 1.2;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .cluster-route__node b { display: block; color: var(--ink); font-size: 10.5px; line-height: 1.25; margin-bottom: 3px; }
+    .cluster-route__node span { display: block; color: var(--secondary); font-size: 7.7px; line-height: 1.32; }
+    .cluster-route__arrow { align-self: center; color: var(--mint); font-size: 16px; text-align: center; }
+    .cluster-note { margin-top: 6px; color: var(--body); font-size: 8.3px; line-height: 1.35; }
+
+    .routing-lanes { margin-top: 12px; border-top: 1px solid var(--hairline); }
+
+    .routing-lane {
+      display: grid;
+      grid-template-columns: 76px 1fr;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .routing-lane__label {
+      color: var(--mint);
+      font-size: 8px;
+      line-height: 1.35;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .routing-lane b { display: block; color: var(--ink); font-size: 10.5px; line-height: 1.35; margin-bottom: 3px; }
+    .routing-lane b i { color: var(--mint); padding: 0 4px; font-style: normal; }
+    .routing-lane span { display: block; color: var(--secondary); font-size: 8.3px; line-height: 1.4; }
+    .routing-note { margin-top: 10px; color: var(--body); font-size: 8.7px; line-height: 1.43; }
+
+    .infra-evidence {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 14px;
+    }
+
+    .campaign-proof {
+      min-width: 0;
+      padding-left: 24px;
+      border-left: 1px solid var(--hairline);
+    }
+
+    .campaign-proof h3 { max-width: 360px; font-size: 22px; line-height: 1.18; }
+    .campaign-proof > p { font-size: 10.5px; line-height: 1.48; }
+
+    .campaign-scale {
+      display: grid;
+      grid-template-columns: 1fr 16px 1fr 16px 1fr;
+      gap: 5px;
+      align-items: stretch;
+      margin-top: 14px;
+    }
+
+    .campaign-arrow { display: grid; place-items: center; color: var(--mint); font-size: 15px; }
+
+    .campaign-stage {
+      padding: 11px 9px;
+      border: 1px solid var(--hairline);
+      background: rgba(255,255,255,.012);
+    }
+
+    .campaign-stage--target { border-color: rgba(0,227,157,.28); background: rgba(0,227,157,.035); }
+    .campaign-stage--limit { border-color: rgba(124,92,255,.34); background: rgba(124,92,255,.04); }
+    .campaign-stage b { display: block; color: var(--ink); font-size: 19px; line-height: 1; margin-bottom: 7px; }
+    .campaign-stage--target b { color: var(--mint); }
+    .campaign-stage--limit b { color: #9b84ff; }
+    .campaign-stage--baseline b { white-space: nowrap; }
+    .campaign-stage span { display: block; color: var(--secondary); font-size: 7.8px; line-height: 1.35; text-transform: uppercase; letter-spacing: .05em; }
+    .campaign-baseline { margin-top: 13px; padding: 10px 11px; border-left: 2px solid var(--mint); background: rgba(0,227,157,.025); }
+    .campaign-baseline b { display: block; color: var(--ink); font-size: 9.5px; line-height: 1.35; margin-bottom: 3px; }
+    .campaign-baseline span { display: block; color: var(--secondary); font-size: 8.3px; line-height: 1.4; }
+    .campaign-note { margin-top: 10px; color: var(--secondary); font-size: 8.8px; line-height: 1.45; }
+    .infra-page .story-bridge { margin-top: 18px; padding: 13px 0 0 16px; font-size: 14px; line-height: 1.38; }
+
+    .campaign-page .page-content { padding-top: 42px; }
+    .campaign-page h2 { max-width: 650px; font-size: 36px; }
+    .campaign-page .standfirst { max-width: 650px; }
+
+    .campaign-page-layout {
+      display: grid;
+      grid-template-columns: .82fr 1.18fr;
+      gap: 30px;
+      align-items: stretch;
+      margin-top: 31px;
+      padding-top: 22px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .campaign-context, .campaign-page .campaign-proof { min-width: 0; }
+    .campaign-context h3 { font-size: 22px; line-height: 1.22; }
+    .campaign-context p { font-size: 11px; line-height: 1.5; }
+    .campaign-context__fact { margin-top: 18px; padding: 14px 14px 15px; border: 1px solid rgba(0,227,157,.24); background: rgba(0,227,157,.025); }
+    .campaign-context__fact small { display: block; color: var(--mint); font-size: 8px; line-height: 1.3; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 7px; }
+    .campaign-context__fact b { display: block; color: var(--ink); font-size: 18px; line-height: 1.15; margin-bottom: 7px; }
+    .campaign-context__fact span { display: block; color: var(--secondary); font-size: 9px; line-height: 1.45; }
+
+    .campaign-page .campaign-proof { display: flex; flex-direction: column; padding-left: 26px; }
+    .campaign-page .campaign-proof h3 { font-size: 24px; }
+    .campaign-proof__body {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 0;
+      margin-top: 16px;
+      padding: 15px;
+      border: 1px solid var(--hairline);
+      background: rgba(255,255,255,.012);
+    }
+    .campaign-page .campaign-scale { margin-top: 0; }
+    .campaign-page .campaign-stage { padding: 16px 10px; }
+    .campaign-page .campaign-stage b { font-size: 27px; }
+    .campaign-page .campaign-stage--baseline b { font-size: 23px; }
+    .campaign-page .campaign-stage span { font-size: 8.5px; }
+    .campaign-page .campaign-note { margin-top: 12px; font-size: 9.5px; line-height: 1.45; }
+
+    .campaign-validation {
+      margin-top: 24px;
+      padding: 16px 20px 15px;
+      border: 1px solid var(--hairline);
+      background: linear-gradient(115deg, rgba(0,227,157,.032), rgba(255,255,255,.008) 58%, rgba(124,92,255,.024));
+    }
+
+    .campaign-validation__header {
+      display: grid;
+      grid-template-columns: .82fr 1.18fr;
+      gap: 30px;
+      align-items: start;
+      margin-top: 8px;
+    }
+
+    .campaign-validation__header h3 { margin: 0; font-size: 21px; line-height: 1.18; }
+    .campaign-validation__header p { margin: 0; color: var(--body); font-size: 10px; line-height: 1.48; }
+
+    .campaign-validation__flow {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1fr) 16px minmax(0, 1fr) 16px minmax(0, 1fr);
+      gap: 6px;
+      align-items: center;
+      margin-top: 15px;
+      padding: 11px 0;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .campaign-validation__step small { display: block; color: var(--mint); font-size: 7.5px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
+    .campaign-validation__step b { display: block; color: var(--ink); font-size: 11px; line-height: 1.3; margin-bottom: 3px; }
+    .campaign-validation__step span { display: block; color: var(--secondary); font-size: 8.2px; line-height: 1.4; }
+    .campaign-validation__step--target b { color: var(--mint); }
+    .campaign-validation__step--reserve b { color: #9b84ff; }
+    .campaign-validation__arrow { color: var(--mint); font-size: 15px; text-align: center; }
+
+    .campaign-validation__proof {
+      display: grid;
+      grid-template-columns: 168px 1fr;
+      gap: 22px;
+      align-items: start;
+      margin-top: 13px;
+    }
+
+    .campaign-validation__proof b { color: var(--mint); font-size: 11px; line-height: 1.35; }
+    .campaign-validation__proof span { color: var(--body); font-size: 9px; line-height: 1.45; }
+    .campaign-page .story-bridge { margin-top: 28px; }
+
+    .ops-page .page-content { padding-top: 39px; }
+    .ops-page h2 { max-width: 670px; font-size: 35px; }
+    .ops-page .standfirst { max-width: 660px; }
+
+    .oncall-block {
+      margin-top: 27px;
+      padding: 20px 20px 19px;
+      border: 1px solid rgba(0,227,157,.25);
+      background: linear-gradient(120deg, rgba(0,227,157,.04), rgba(255,255,255,.008) 62%);
+    }
+
+    .oncall-intro {
+      display: grid;
+      grid-template-columns: .96fr 1.04fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-top: 12px;
+    }
+
+    .oncall-intro h3 {
+      max-width: none;
+      margin: 0;
+      padding-right: 24px;
+      border-right: 1px solid var(--hairline);
+      font-size: 20.5px;
+      line-height: 1.18;
+    }
+
+    .oncall-intro p {
+      align-self: center;
+      margin: 0;
+      color: var(--body);
+      font-size: 10.5px;
+      line-height: 1.5;
+    }
+
+    .oncall-status {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      align-items: center;
+      padding-bottom: 11px;
+      border-bottom: 1px solid var(--hairline);
+      color: var(--secondary);
+      font-size: 8px;
+      line-height: 1.25;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .oncall-status span { color: var(--mint); font-weight: 700; }
+    .oncall-status strong {
+      color: var(--mint);
+      font-size: 17px;
+      line-height: 1;
+      letter-spacing: -.02em;
+    }
+
+    .oncall-status em { color: var(--ink); font-style: normal; font-weight: 600; }
+
+    .oncall-flow {
+      display: grid;
+      grid-template-columns: 1fr 18px 1fr 18px 1fr 18px 1.08fr;
+      gap: 8px;
+      align-items: stretch;
+      margin-top: 17px;
+      padding-top: 15px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .oncall-step { min-width: 0; padding: 13px 11px; border: 1px solid var(--hairline); background: rgba(255,255,255,.012); }
+    .oncall-step small { display: block; color: var(--mint); font-size: 7.5px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 5px; }
+    .oncall-step b { display: block; color: var(--ink); font-size: 11.5px; line-height: 1.3; margin-bottom: 4px; }
+    .oncall-step span { display: block; color: var(--secondary); font-size: 8.8px; line-height: 1.4; }
+    .oncall-arrow { display: grid; place-items: center; color: var(--mint); font-size: 15px; }
+    .oncall-step--response { border-color: rgba(0,227,157,.36); background: rgba(0,227,157,.045); }
+    .oncall-step--response b { color: var(--mint); font-size: 27px; line-height: 1; letter-spacing: -.04em; }
+
+    .oncall-followup {
+      margin-top: 14px;
+      padding-top: 13px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .incident-review {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 11px;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .incident-review__step { min-width: 0; padding: 11px 14px 12px; }
+    .incident-review__step:first-child { padding-left: 0; }
+    .incident-review__step + .incident-review__step { border-left: 1px solid var(--hairline); }
+    .incident-review__step small { display: block; color: var(--mint); font-size: 7.5px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
+    .incident-review__step b { display: block; color: var(--ink); font-size: 10.5px; line-height: 1.3; margin-bottom: 3px; }
+    .incident-review__step span { display: block; color: var(--secondary); font-size: 8.4px; line-height: 1.4; }
+
+    .support-block {
+      margin-top: 24px;
+      padding: 20px 20px 19px;
+      border: 1px solid var(--hairline);
+      border-top: 2px solid rgba(0,227,157,.62);
+      background: linear-gradient(120deg, rgba(0,227,157,.025), rgba(255,255,255,.008) 56%);
+    }
+
+    .support-intro {
+      display: grid;
+      grid-template-columns: .88fr 1.12fr;
+      gap: 32px;
+      align-items: start;
+      margin-top: 8px;
+    }
+
+    .support-intro h3 { margin: 0; font-size: 23px; line-height: 1.18; }
+    .support-intro p { margin: 0; color: var(--body); font-size: 10.7px; line-height: 1.48; }
+
+    .support-flow {
+      display: grid;
+      grid-template-columns: 1fr 22px 1fr 22px 1fr;
+      gap: 9px;
+      align-items: center;
+      margin-top: 17px;
+      padding-top: 15px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .support-step small { display: block; color: var(--mint); font-size: 7.5px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
+    .support-step b { display: block; color: var(--ink); font-size: 11px; line-height: 1.3; margin-bottom: 3px; }
+    .support-step span { display: block; color: var(--secondary); font-size: 8.8px; line-height: 1.4; }
+    .support-arrow { color: var(--mint); font-size: 15px; text-align: center; }
+
+    /* Case 02 — anonymous omnichannel retailer */
+    .case02-page {
+      --case02-accent: #4d8fff;
+    }
+
+    .case02-page .kicker {
+      color: var(--case02-accent);
+    }
+
+    .case02-page .signal::before {
+      background: var(--case02-accent);
+      box-shadow: 0 0 14px rgba(77,143,255,.28);
+    }
+
+    .case02-page .page-content {
+      display: flex;
+      flex-direction: column;
+      padding-top: 46px;
+      padding-bottom: 28px;
+    }
+    .case02-page h2 { max-width: 670px; font-size: 34px; line-height: 1.04; }
+    .case02-page .standfirst { max-width: 665px; font-size: 14.5px; line-height: 1.5; }
+
+    .case02-cover {
+      background:
+        radial-gradient(circle at 79% 22%, rgba(0,227,157,.16), transparent 19rem),
+        linear-gradient(148deg, rgba(0,227,157,.055), transparent 55%),
+        var(--paper);
+    }
+
+    .case02-cover::after {
+      content: "02";
+      position: absolute;
+      right: 36px;
+      bottom: 92px;
+      z-index: -1;
+      color: transparent;
+      font-size: 305px;
+      font-weight: 650;
+      line-height: .76;
+      letter-spacing: -.09em;
+      -webkit-text-stroke: 1px rgba(0,227,157,.18);
+      opacity: .92;
+    }
+
+    .case02-cover .page-content {
+      display: flex;
+      flex-direction: column;
+      padding-top: 72px;
+      padding-bottom: 34px;
+    }
+
+    .case02-cover__meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+      color: var(--secondary);
+      font-size: 9px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .case02-cover__meta span {
+      padding: 7px 10px 6px;
+      border: 1px solid rgba(77,143,255,.5);
+      color: var(--case02-accent);
+      font-weight: 700;
+    }
+
+    .case02-cover__meta em {
+      font-style: normal;
+    }
+
+    .case02-cover h1 {
+      max-width: 690px;
+      margin: 0;
+      font-size: 48px;
+      font-weight: 650;
+      line-height: 1.01;
+      letter-spacing: -.045em;
+    }
+
+    .case02-cover__lead {
+      max-width: 590px;
+      margin: 26px 0 0;
+      color: var(--body);
+      font-size: 16px;
+      line-height: 1.52;
+    }
+
+    .case02-cover__proofs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: auto;
+      border-top: 1px solid rgba(0,227,157,.34);
+      border-bottom: 1px solid var(--hairline);
+      background: rgba(0,0,0,.14);
+    }
+
+    .case02-cover__proof {
+      min-width: 0;
+      padding: 20px 18px 18px;
+    }
+
+    .case02-cover__proof + .case02-cover__proof {
+      border-left: 1px solid var(--hairline);
+    }
+
+    .case02-cover__proof strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--mint);
+      font-size: 31px;
+      line-height: 1;
+      letter-spacing: -.045em;
+    }
+
+    .case02-cover__proof span {
+      display: block;
+      max-width: 170px;
+      color: var(--secondary);
+      font-size: 10.2px;
+      line-height: 1.42;
+    }
+
+    .case02-scope-label {
+      margin-top: 20px;
+      color: var(--case02-accent);
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .case02-scope-strip {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      margin-top: 8px;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .case02-scope-strip span {
+      min-width: 0;
+      padding: 12px 8px;
+      color: var(--secondary);
+      font-size: 8.4px;
+      line-height: 1.35;
+      letter-spacing: .08em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .case02-scope-strip span + span { border-left: 1px solid var(--hairline); }
+    .case02-scope-strip b { display: block; color: var(--mint); font-size: 9.6px; margin-bottom: 3px; }
+
+    .case02-entry-grid {
+      display: grid;
+      grid-template-columns: .86fr 1.14fr;
+      gap: 22px;
+      margin-top: 24px;
+    }
+
+    .case02-opening .case02-entry-grid { flex: 1; min-height: 420px; }
+
+    .case02-entry-card {
+      min-width: 0;
+      padding: 20px;
+      border: 1px solid var(--hairline);
+      background: rgba(255,255,255,.012);
+    }
+
+    .case02-entry-card--business {
+      display: flex;
+      flex-direction: column;
+      border-color: rgba(77,143,255,.34);
+      background: linear-gradient(135deg, rgba(77,143,255,.075), rgba(255,255,255,.008) 72%);
+    }
+
+    .case02-opening .section-label span,
+    .case02-opening .case02-scope-strip b,
+    .case02-opening .case02-state-row--risk b {
+      color: var(--case02-accent);
+    }
+
+    .case02-opening .section-label {
+      font-size: 9.4px;
+    }
+
+    .case02-opening .case02-entry-card p {
+      font-size: 11.4px;
+      line-height: 1.52;
+    }
+
+    .case02-opening .case02-stall span {
+      font-size: 11px;
+    }
+
+    .case02-opening .case02-state-row small {
+      font-size: 8.6px;
+    }
+
+    .case02-opening .case02-state-row b {
+      font-size: 13px;
+      line-height: 1.28;
+      margin-bottom: 5px;
+    }
+
+    .case02-opening .case02-state-row span {
+      font-size: 10.2px;
+      line-height: 1.42;
+    }
+
+    .case02-opening .case02-state-row--risk b {
+      font-size: 20.5px;
+    }
+
+    .case02-entry-card h3 { max-width: 265px; margin-bottom: 11px; font-size: 23px; line-height: 1.14; }
+    .case02-entry-card p { color: var(--secondary); font-size: 10.5px; line-height: 1.5; }
+
+    .case02-stall {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 150px;
+      margin-top: 22px;
+      padding: 22px 20px;
+      border-top: 1px solid rgba(77,143,255,.42);
+      border-bottom: 1px solid var(--hairline);
+      background: linear-gradient(90deg, rgba(77,143,255,.095), rgba(77,143,255,.015));
+    }
+
+    .case02-stall small {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--case02-accent);
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .case02-stall strong { display: block; color: var(--case02-accent); font-size: 27px; line-height: 1.04; letter-spacing: -.035em; }
+    .case02-stall span { display: block; max-width: 255px; margin-top: 10px; color: var(--body); font-size: 10.2px; line-height: 1.48; }
+
+    .case02-state-list {
+      display: grid;
+      grid-template-rows: repeat(4, minmax(0, 1fr));
+      height: 100%;
+      border-top: 1px solid var(--hairline);
+    }
+    .case02-state-row {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 14px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .case02-state-row small { color: var(--mint); font-size: 7.5px; letter-spacing: .1em; text-transform: uppercase; }
+    .case02-state-row b { display: block; font-size: 11.5px; line-height: 1.3; margin-bottom: 3px; }
+    .case02-state-row span { display: block; color: var(--secondary); font-size: 9px; line-height: 1.4; }
+    .case02-state-row--risk b { color: var(--mint); font-size: 19px; letter-spacing: -.03em; }
+
+    .case02-release-layout {
+      display: grid;
+      grid-template-columns: .86fr 1.14fr;
+      gap: 22px;
+      flex: 1;
+      min-height: 420px;
+      margin-top: 24px;
+    }
+
+    .case02-release-outcome {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 23px 22px;
+      border: 1px solid rgba(0,227,157,.34);
+      background: linear-gradient(145deg, rgba(0,227,157,.085), rgba(255,255,255,.008) 72%);
+    }
+
+    .case02-release-outcome h3 {
+      max-width: 285px;
+      margin: 0 0 13px;
+      font-size: 27px;
+      line-height: 1.08;
+      letter-spacing: -.035em;
+    }
+
+    .case02-release-outcome > p {
+      margin: 0;
+      color: var(--body);
+      font-size: 11.2px;
+      line-height: 1.5;
+    }
+
+    .case02-release-metrics {
+      margin-top: auto;
+      border-top: 1px solid rgba(0,227,157,.28);
+    }
+
+    .case02-release-metric {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 13px;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .case02-release-metric strong {
+      color: var(--mint);
+      font-size: 19px;
+      line-height: 1;
+      letter-spacing: -.035em;
+    }
+
+    .case02-release-metric span {
+      color: var(--secondary);
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .case02-release-controls {
+      display: grid;
+      grid-template-rows: auto repeat(3, minmax(0, 1fr));
+      min-width: 0;
+      padding: 22px 20px 8px;
+      border: 1px solid var(--hairline);
+      background: rgba(255,255,255,.008);
+    }
+
+    .case02-release-controls > .section-label {
+      margin-bottom: 5px;
+    }
+
+    .case02-release-control {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 16px;
+      align-items: center;
+      min-height: 0;
+      padding: 16px 0;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .case02-release-control small {
+      color: var(--case02-accent);
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .case02-release-control h3 {
+      margin: 0 0 6px;
+      font-size: 15.7px;
+      line-height: 1.22;
+    }
+
+    .case02-release-control p {
+      margin: 0;
+      color: var(--secondary);
+      font-size: 10.3px;
+      line-height: 1.45;
+    }
+
+    .case02-release-proof {
+      display: grid;
+      grid-template-columns: .92fr 1.08fr;
+      gap: 27px;
+      align-items: start;
+      margin-top: 22px;
+      padding: 19px 20px;
+      border-top: 1px solid rgba(77,143,255,.42);
+      border-bottom: 1px solid var(--hairline);
+      background: linear-gradient(90deg, rgba(77,143,255,.065), rgba(255,255,255,.006));
+    }
+
+    .case02-release-proof h3 {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.18;
+      letter-spacing: -.02em;
+    }
+
+    .case02-release-proof h3 strong { color: var(--case02-accent); }
+    .case02-release-proof p { margin: 0; color: var(--body); font-size: 10.8px; line-height: 1.5; }
+
+    .case02-refactor-decision {
+      display: grid;
+      grid-template-columns: 1.28fr .72fr;
+      gap: 28px;
+      align-items: center;
+      margin-top: 25px;
+      padding: 19px 20px;
+      border-top: 1px solid rgba(77,143,255,.42);
+      border-bottom: 1px solid var(--hairline);
+      background: linear-gradient(90deg, rgba(77,143,255,.07), rgba(255,255,255,.006));
+    }
+
+    .case02-refactor-decision h3 {
+      margin: 0 0 8px;
+      font-size: 21px;
+      line-height: 1.17;
+      letter-spacing: -.025em;
+    }
+
+    .case02-refactor-decision p {
+      margin: 0;
+      color: var(--body);
+      font-size: 10.2px;
+      line-height: 1.48;
+    }
+
+    .case02-refactor-decision__time {
+      padding-left: 22px;
+      border-left: 1px solid var(--hairline);
+    }
+
+    .case02-refactor-decision__time strong {
+      display: block;
+      color: var(--case02-accent);
+      font-size: 25px;
+      line-height: 1;
+      letter-spacing: -.04em;
+    }
+
+    .case02-refactor-decision__time span {
+      display: block;
+      margin-top: 8px;
+      color: var(--secondary);
+      font-size: 9.4px;
+      line-height: 1.42;
+    }
+
+    .case02-refactor-model {
+      display: grid;
+      grid-template-rows: auto repeat(3, minmax(0, 1fr));
+      flex: 1;
+      min-height: 390px;
+      margin-top: 21px;
+      border: 1px solid var(--hairline);
+      background: rgba(255,255,255,.007);
+    }
+
+    .case02-refactor-model__head,
+    .case02-refactor-pair {
+      display: grid;
+      grid-template-columns: 1fr 64px 1fr;
+    }
+
+    .case02-refactor-model__head {
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .case02-refactor-model__head span {
+      padding: 12px 18px;
+      color: var(--secondary);
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .case02-refactor-model__head span:first-child { color: var(--mint); }
+    .case02-refactor-model__head span:last-child { color: var(--case02-accent); }
+    .case02-refactor-model__head span:nth-child(2) { padding-inline: 0; text-align: center; }
+    .case02-refactor-pair + .case02-refactor-pair { border-top: 1px solid var(--hairline); }
+
+    .case02-refactor-side {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+      padding: 15px 18px;
+    }
+
+    .case02-refactor-side--business { background: linear-gradient(90deg, rgba(0,227,157,.025), transparent); }
+    .case02-refactor-side--tech { background: linear-gradient(270deg, rgba(77,143,255,.035), transparent); }
+    .case02-refactor-side small { display: block; color: var(--secondary); font-size: 7.5px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 5px; }
+    .case02-refactor-side b { display: block; font-size: 13.2px; line-height: 1.25; margin-bottom: 5px; }
+    .case02-refactor-side p { margin: 0; color: var(--secondary); font-size: 9.3px; line-height: 1.43; }
+
+    .case02-refactor-link {
+      display: grid;
+      place-items: center;
+      border-left: 1px solid var(--hairline);
+      border-right: 1px solid var(--hairline);
+      color: var(--mint);
+      font-size: 17px;
+      background: rgba(255,255,255,.006);
+    }
+
+    .case02-refactor-principle {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 25px;
+      align-items: center;
+      margin-top: 20px;
+      padding: 18px 20px;
+      border-left: 2px solid var(--mint);
+      background: linear-gradient(90deg, rgba(0,227,157,.075), transparent 82%);
+    }
+
+    .case02-refactor-principle h3 { margin: 0; font-size: 20px; line-height: 1.16; letter-spacing: -.025em; }
+    .case02-refactor-principle p { margin: 0; color: var(--body); font-size: 10.4px; line-height: 1.5; }
+
+    .case02-scale-brief {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 22px;
+      align-items: center;
+      margin-top: 26px;
+      padding: 16px 18px;
+      border: 1px solid rgba(0,227,157,.22);
+      background: rgba(0,227,157,.025);
+    }
+
+    .case02-scale-brief b { color: var(--mint); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
+    .case02-scale-brief span { color: var(--body); font-size: 10.5px; line-height: 1.45; }
+
+    .case02-metric-table {
+      margin-top: 22px;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .case02-metric-row {
+      display: grid;
+      grid-template-columns: 155px 1fr 42px 1fr;
+      align-items: center;
+      min-height: 104px;
+    }
+
+    .case02-metric-row + .case02-metric-row { border-top: 1px solid var(--hairline); }
+    .case02-metric-row__label { color: var(--secondary); font-size: 8.5px; letter-spacing: .11em; text-transform: uppercase; }
+    .case02-metric-value { padding-left: 18px; border-left: 1px solid var(--hairline); }
+    .case02-metric-value strong { display: block; font-size: 36px; line-height: .95; letter-spacing: -.055em; }
+    .case02-metric-value span { display: block; margin-top: 7px; color: var(--secondary); font-size: 8.8px; line-height: 1.4; }
+    .case02-metric-value--after strong { color: var(--mint); }
+    .case02-metric-arrow { color: var(--mint); font-size: 17px; text-align: center; }
+
+    .case02-scale-results {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 22px;
+      border: 1px solid var(--hairline);
+    }
+
+    .case02-scale-results div { min-width: 0; padding: 15px 16px; }
+    .case02-scale-results div + div { border-left: 1px solid var(--hairline); }
+    .case02-scale-results b { display: block; color: var(--mint); font-size: 11px; line-height: 1.3; margin-bottom: 5px; }
+    .case02-scale-results span { display: block; color: var(--secondary); font-size: 8.8px; line-height: 1.4; }
+
+    .case02-impact-layout {
+      display: grid;
+      grid-template-columns: .92fr 1.08fr;
+      gap: 22px;
+      flex: 1;
+      min-height: 475px;
+      margin-top: 22px;
+    }
+
+    .case02-impact-result {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 22px 20px;
+      border: 1px solid rgba(0,227,157,.34);
+      background: linear-gradient(145deg, rgba(0,227,157,.075), rgba(255,255,255,.006) 72%);
+    }
+
+    .case02-impact-result h3 {
+      margin: 0 0 9px;
+      font-size: 22px;
+      line-height: 1.15;
+      letter-spacing: -.025em;
+    }
+
+    .case02-impact-result > p {
+      margin: 0;
+      color: var(--body);
+      font-size: 10.8px;
+      line-height: 1.48;
+    }
+
+    .case02-impact-metrics {
+      margin-top: auto;
+      border-top: 1px solid rgba(0,227,157,.28);
+    }
+
+    .case02-impact-metric {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 15px;
+      align-items: center;
+      min-height: 98px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .case02-impact-metric > span {
+      color: var(--secondary);
+      font-size: 8.5px;
+      line-height: 1.35;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .case02-impact-delta {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr);
+      column-gap: 3px;
+      align-items: center;
+    }
+
+    .case02-impact-delta strong {
+      font-size: 25px;
+      line-height: 1;
+      letter-spacing: -.045em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .case02-impact-delta strong:first-child { justify-self: end; }
+    .case02-impact-delta strong:last-child { justify-self: start; color: var(--mint); }
+    .case02-impact-delta i { color: var(--mint); font-size: 13px; font-style: normal; text-align: center; }
+    .case02-impact-delta small { grid-column: 1 / -1; margin-top: 7px; color: var(--secondary); font-size: 9.2px; line-height: 1.38; }
+
+    .case02-impact-visual {
+      display: grid;
+      grid-template-rows: auto auto auto;
+      margin-top: auto;
+      border-top: 1px solid rgba(0,227,157,.3);
+    }
+
+    .case02-impact-growth {
+      padding: 17px 0 15px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .case02-impact-growth > small,
+    .case02-impact-cpu__head small,
+    .case02-impact-infra > small {
+      color: var(--secondary);
+      font-size: 8.3px;
+      font-weight: 700;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .case02-impact-growth__line {
+      display: grid;
+      grid-template-columns: auto minmax(48px, 1fr) auto;
+      gap: 11px;
+      align-items: center;
+      margin-top: 9px;
+    }
+
+    .case02-impact-growth__line span {
+      font-size: 25px;
+      line-height: 1;
+      letter-spacing: -.04em;
+    }
+
+    .case02-impact-growth__line i {
+      position: relative;
+      width: 72%;
+      justify-self: center;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(77,143,255,.55), var(--mint));
+    }
+
+    .case02-impact-growth__line i::after {
+      content: "›";
+      position: absolute;
+      right: -1px;
+      top: 50%;
+      color: var(--mint);
+      font-size: 18px;
+      font-style: normal;
+      line-height: 1;
+      transform: translateY(-54%);
+    }
+
+    .case02-impact-growth__line strong {
+      color: var(--mint);
+      font-size: 36px;
+      line-height: .9;
+      letter-spacing: -.055em;
+    }
+
+    .case02-impact-growth p {
+      margin: 7px 0 0;
+      color: var(--secondary);
+      font-size: 9.2px;
+      line-height: 1.4;
+    }
+
+    .case02-impact-cpu {
+      padding: 16px 0 17px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .case02-impact-cpu__head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .case02-impact-cpu__head b {
+      color: var(--secondary);
+      font-size: 8.5px;
+      font-weight: 400;
+    }
+
+    .case02-impact-bar {
+      display: grid;
+      grid-template-columns: 37px minmax(0, 1fr) 52px;
+      gap: 9px;
+      align-items: center;
+    }
+
+    .case02-impact-bar + .case02-impact-bar { margin-top: 10px; }
+
+    .case02-impact-bar span {
+      color: var(--secondary);
+      font-size: 8.5px;
+      text-transform: uppercase;
+    }
+
+    .case02-impact-bar i {
+      position: relative;
+      height: 8px;
+      background: rgba(255,255,255,.055);
+      overflow: hidden;
+    }
+
+    .case02-impact-bar i::after {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: var(--bar-width);
+      min-width: 8px;
+      background: var(--bar-color);
+    }
+
+    .case02-impact-bar strong {
+      font-size: 18px;
+      line-height: 1;
+      letter-spacing: -.035em;
+      text-align: right;
+    }
+
+    .case02-impact-bar--before { --bar-width: 70%; --bar-color: var(--case02-accent); }
+    .case02-impact-bar--after { --bar-width: 10%; --bar-color: var(--mint); }
+    .case02-impact-bar--after strong { color: var(--mint); }
+
+    .case02-impact-infra {
+      display: grid;
+      grid-template-columns: 1fr auto 20px auto;
+      gap: 8px;
+      align-items: center;
+      padding-top: 16px;
+    }
+
+    .case02-impact-infra strong {
+      font-size: 19px;
+      line-height: 1;
+      letter-spacing: -.035em;
+    }
+
+    .case02-impact-infra i {
+      color: var(--mint);
+      font-size: 13px;
+      font-style: normal;
+      text-align: center;
+    }
+
+    .case02-impact-infra strong:last-of-type { color: var(--mint); }
+
+    .case02-impact-infra span {
+      grid-column: 2 / -1;
+      margin-top: 1px;
+      color: var(--secondary);
+      font-size: 8.8px;
+      line-height: 1.35;
+    }
+
+    .case02-impact-work {
+      display: grid;
+      grid-template-rows: auto repeat(3, minmax(0, 1fr));
+      min-width: 0;
+      padding: 21px 20px 13px;
+      border: 1px solid var(--hairline);
+      background: rgba(255,255,255,.007);
+      overflow: hidden;
+    }
+
+    .case02-impact-work > .section-label { margin-bottom: 5px; }
+
+    .case02-impact-step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 17px;
+      align-items: center;
+      margin-left: 12px;
+      padding: 13px 14px 13px 20px;
+      border-left: 1px solid rgba(77,143,255,.48);
+      background: linear-gradient(90deg, rgba(77,143,255,.055), transparent 72%);
+    }
+
+    .case02-impact-step::before {
+      content: "";
+      position: absolute;
+      left: -5px;
+      top: 50%;
+      width: 9px;
+      height: 9px;
+      border: 2px solid var(--paper);
+      border-radius: 50%;
+      background: var(--case02-accent);
+      transform: translateY(-50%);
+    }
+
+    .case02-impact-step + .case02-impact-step { border-top: 1px solid var(--hairline); }
+    .case02-impact-step:last-child { border-left-color: rgba(0,227,157,.5); background: linear-gradient(90deg, rgba(0,227,157,.05), transparent 72%); }
+    .case02-impact-step:last-child::before { background: var(--mint); }
+
+    .case02-impact-step small {
+      color: var(--case02-accent);
+      font-size: 8.4px;
+      font-weight: 700;
+      line-height: 1.35;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .case02-impact-step h3 { margin: 0 0 6px; font-size: 15.5px; line-height: 1.22; }
+    .case02-impact-step p { margin: 0; color: var(--secondary); font-size: 10.2px; line-height: 1.45; }
+
+    .case02-impact-close {
+      display: grid;
+      grid-template-columns: .86fr 1.14fr;
+      gap: 25px;
+      align-items: center;
+      margin-top: 21px;
+      padding: 18px 20px;
+      border-left: 2px solid var(--mint);
+      background: linear-gradient(90deg, rgba(0,227,157,.075), transparent 82%);
+    }
+
+    .case02-impact-close h3 { margin: 0; font-size: 20px; line-height: 1.16; letter-spacing: -.025em; }
+    .case02-impact-close p { margin: 0; color: var(--body); font-size: 10.8px; line-height: 1.5; }
+
+    .case02-initiative-layout {
+      display: grid;
+      grid-template-columns: 1.18fr .82fr;
+      gap: 18px;
+      margin-top: 21px;
+    }
+
+    .case02-initiative-pitch {
+      min-width: 0;
+      padding: 21px 22px;
+      border: 1px solid rgba(47,126,255,.3);
+      background: linear-gradient(145deg, rgba(47,126,255,.075), rgba(255,255,255,.006) 72%);
+    }
+
+    .case02-initiative-pitch > h3 {
+      max-width: 570px;
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.17;
+      letter-spacing: -.025em;
+    }
+
+    .case02-initiative-pitch > p {
+      max-width: 630px;
+      margin: 0;
+      color: var(--body);
+      font-size: 10.5px;
+      line-height: 1.5;
+    }
+
+    .case02-initiative-steps {
+      margin-top: 14px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .case02-initiative-step {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 13px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .case02-initiative-step small {
+      padding-top: 2px;
+      color: var(--case02-blue);
+      font-size: 7.8px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .case02-initiative-step h4 {
+      margin: 0 0 4px;
+      color: var(--ink);
+      font-size: 12.7px;
+      line-height: 1.28;
+    }
+
+    .case02-initiative-step p {
+      margin: 0;
+      color: var(--secondary);
+      font-size: 9.3px;
+      line-height: 1.45;
+    }
+
+    .case02-initiative-proof {
+      display: grid;
+      grid-template-rows: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .case02-initiative-stat {
+      display: grid;
+      align-content: center;
+      min-width: 0;
+      padding: 15px 18px;
+      border: 1px solid var(--hairline);
+      background: rgba(255,255,255,.008);
+    }
+
+    .case02-initiative-stat:nth-child(2) {
+      border-color: rgba(0,227,157,.3);
+      background: linear-gradient(135deg, rgba(0,227,157,.065), rgba(255,255,255,.006));
+    }
+
+    .case02-initiative-stat small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--case02-blue);
+      font-size: 7.8px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .case02-initiative-stat strong {
+      display: block;
+      color: var(--mint);
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: -.04em;
+    }
+
+    .case02-initiative-stat span {
+      display: block;
+      margin-top: 7px;
+      color: var(--body);
+      font-size: 9.3px;
+      line-height: 1.38;
+    }
+
+    .case02-initiative-platform {
+      margin-top: 14px;
+      padding: 16px 18px 14px;
+      border: 1px solid var(--hairline);
+      background: linear-gradient(90deg, rgba(0,227,157,.04), transparent 62%);
+    }
+
+    .case02-initiative-platform__head {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .case02-initiative-platform h3 {
+      margin: 0;
+      font-size: 18.5px;
+      line-height: 1.18;
+      letter-spacing: -.025em;
+    }
+
+    .case02-initiative-platform__head p {
+      margin: 0;
+      color: var(--body);
+      font-size: 10.1px;
+      line-height: 1.47;
+    }
+
+    .case02-initiative-capabilities {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 12px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .case02-initiative-capability {
+      min-width: 0;
+      padding: 10px 16px 0 0;
+    }
+
+    .case02-initiative-capability + .case02-initiative-capability {
+      padding-left: 16px;
+      border-left: 1px solid var(--hairline);
+    }
+
+    .case02-initiative-capability small {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--case02-blue);
+      font-size: 7.6px;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .case02-initiative-capability b { font-size: 10.8px; line-height: 1.3; }
+    .case02-initiative-capability p { margin: 5px 0 0; color: var(--secondary); font-size: 9px; line-height: 1.4; }
+
+    .case02-initiative-capability--future {
+      opacity: .62;
+    }
+
+    .case02-case-conclusion {
+      display: grid;
+      grid-template-columns: .86fr 1.14fr;
+      gap: 24px;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(77,143,255,.42);
+    }
+
+    .case02-case-conclusion div { min-width: 0; }
+
+    .case02-case-conclusion small {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--mint);
+      font-size: 7.4px;
+      font-weight: 700;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .case02-case-conclusion strong {
+      display: block;
+      color: var(--case02-accent);
+      font-size: 14.4px;
+      line-height: 1.15;
+      letter-spacing: -.02em;
+    }
+
+    .case02-case-conclusion span {
+      color: var(--body);
+      font-size: 9.8px;
+      line-height: 1.45;
+    }
+
+    .case02-initiative-hero {
+      display: grid;
+      grid-template-columns: 1.16fr .84fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .case02-initiative-story {
+      padding: 18px 21px 19px;
+      border-left: 2px solid var(--case02-accent);
+      background: linear-gradient(100deg, rgba(77,143,255,.09), rgba(77,143,255,.012) 76%);
+    }
+
+    .case02-initiative-story h3 {
+      max-width: 440px;
+      margin: 0 0 9px;
+      font-size: 20px;
+      line-height: 1.17;
+      letter-spacing: -.025em;
+    }
+
+    .case02-initiative-story p {
+      max-width: 520px;
+      margin: 0;
+      color: var(--body);
+      font-size: 10.4px;
+      line-height: 1.47;
+    }
+
+    .case02-initiative-score {
+      position: relative;
+      padding: 17px 18px 15px;
+      border-top: 1px solid rgba(0,227,157,.38);
+      border-bottom: 1px solid var(--hairline);
+      background: radial-gradient(circle at 72% 12%, rgba(0,227,157,.09), transparent 58%);
+    }
+
+    .case02-initiative-score > small {
+      color: var(--case02-blue);
+      font-size: 7.8px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .case02-initiative-score > strong {
+      display: block;
+      margin-top: 7px;
+      color: var(--mint);
+      font-size: 31px;
+      line-height: 1;
+      letter-spacing: -.045em;
+    }
+
+    .case02-initiative-score > p {
+      margin: 7px 0 0;
+      color: var(--secondary);
+      font-size: 8.9px;
+      line-height: 1.4;
+    }
+
+    .case02-initiative-score__metrics {
+      display: grid;
+      grid-template-columns: 1.12fr .88fr;
+      margin-top: 14px;
+      padding-top: 13px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .case02-initiative-score__metrics div { min-width: 0; }
+    .case02-initiative-score__metrics div + div { padding-left: 13px; border-left: 1px solid var(--hairline); }
+
+    .case02-initiative-score__metrics b {
+      display: block;
+      color: var(--mint);
+      font-size: 17px;
+      line-height: 1;
+      letter-spacing: -.035em;
+    }
+
+    .case02-initiative-score__metrics span {
+      display: block;
+      margin-top: 6px;
+      color: var(--secondary);
+      font-size: 8.1px;
+      line-height: 1.35;
+    }
+
+    .case02-initiative-path {
+      margin-top: 14px;
+      padding-top: 13px;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .case02-initiative-path__steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 7px;
+    }
+
+    .case02-initiative-path__step {
+      position: relative;
+      min-width: 0;
+      padding: 10px 19px 13px 0;
+    }
+
+    .case02-initiative-path__step + .case02-initiative-path__step {
+      padding-left: 19px;
+      border-left: 1px solid var(--hairline);
+    }
+
+    .case02-initiative-path__step:not(:last-child)::after {
+      content: "›";
+      position: absolute;
+      right: -5px;
+      top: 34px;
+      z-index: 2;
+      color: var(--mint);
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .case02-initiative-path__step small {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--case02-blue);
+      font-size: 7.7px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .case02-initiative-path__step h4 {
+      margin: 0 0 4px;
+      font-size: 11.6px;
+      line-height: 1.25;
+    }
+
+    .case02-initiative-path__step p {
+      margin: 0;
+      color: var(--secondary);
+      font-size: 8.5px;
+      line-height: 1.4;
+    }
+
+    .case02-initiative-network {
+      display: grid;
+      grid-template-columns: 1.08fr 30px .82fr 30px 1.1fr;
+      gap: 0;
+      align-items: center;
+      min-height: 104px;
+      margin-top: 12px;
+    }
+
+    .case02-initiative-node,
+    .case02-initiative-hub,
+    .case02-initiative-network__stack {
+      position: relative;
+      z-index: 1;
+    }
+
+    .case02-initiative-node {
+      padding: 13px 14px;
+      border-top: 1px solid rgba(77,143,255,.34);
+      border-bottom: 1px solid var(--hairline);
+      background: linear-gradient(90deg, rgba(77,143,255,.045), transparent 86%);
+    }
+
+    .case02-initiative-node small,
+    .case02-initiative-hub small {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--case02-blue);
+      font-size: 7.2px;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .case02-initiative-node b {
+      display: block;
+      font-size: 10.5px;
+      line-height: 1.28;
+    }
+
+    .case02-initiative-node p {
+      margin: 4px 0 0;
+      color: var(--secondary);
+      font-size: 8.1px;
+      line-height: 1.36;
+    }
+
+    .case02-initiative-hub {
+      display: grid;
+      place-content: center;
+      min-height: 94px;
+      padding: 14px 10px;
+      border-top: 1px solid rgba(0,227,157,.55);
+      border-bottom: 1px solid rgba(0,227,157,.34);
+      background: linear-gradient(145deg, rgba(0,227,157,.09), rgba(0,227,157,.015));
+      text-align: center;
+    }
+
+    .case02-initiative-hub small { color: var(--mint); }
+    .case02-initiative-hub b { font-size: 12.2px; line-height: 1.2; }
+
+    .case02-initiative-network__stack {
+      display: grid;
+      gap: 0;
+    }
+
+    .case02-initiative-network__stack .case02-initiative-node {
+      padding-block: 8px;
+    }
+
+    .case02-initiative-network__stack .case02-initiative-node + .case02-initiative-node {
+      border-top: 0;
+    }
+
+    .case02-initiative-link {
+      position: relative;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(77,143,255,.52), var(--mint));
+    }
+
+    .case02-initiative-link::after {
+      content: "›";
+      position: absolute;
+      right: -1px;
+      top: 50%;
+      color: var(--mint);
+      font-size: 16px;
+      line-height: 1;
+      transform: translateY(-55%);
+    }
+
+    .case02-initiative-node--future { opacity: .58; }
+
+    /* Temporary development-only version switcher. Remove before final export. */
+    .version-switcher {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 10001;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 10px;
+      background: rgba(11,12,15,.96);
+      box-shadow: 0 12px 34px rgba(0,0,0,.46);
+      backdrop-filter: blur(12px);
+      color: var(--ink);
+      font-size: 11px;
+    }
+
+    .version-switcher__label {
+      padding: 0 5px 0 3px;
+      color: var(--mint);
+      font-size: 9px;
+      line-height: 1;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .version-switcher button,
+    .version-switcher select {
+      height: 30px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 6px;
+      color: var(--ink);
+      background: #07080a;
+      font: inherit;
+    }
+
+    .version-switcher button {
+      width: 30px;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .version-switcher button:hover { border-color: var(--mint); }
+    .version-switcher select { min-width: 122px; padding: 0 28px 0 9px; cursor: pointer; }
+    .version-switcher button:focus-visible,
+    .version-switcher select:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+    .version-preview-frame {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #111316;
+    }
+
+    html.version-preview-open,
+    html.version-preview-open body { overflow: hidden; }
+
+    html.in-version-preview .version-switcher,
+    html.in-version-preview .version-preview-frame,
+    html.rendering .version-switcher,
+    html.rendering .version-preview-frame { display: none !important; }
+
+    @media (max-width: 650px) {
+      .casebook { padding: 0; gap: 0; }
+      .page {
+        width: 100%;
+        min-height: 100vh;
+        aspect-ratio: auto;
+        padding: 28px 24px;
+        border: 0;
+      }
+      h1 { font-size: 39px; }
+      h2 { font-size: 31px; }
+      .columns,
+      .columns--wide-left,
+      .columns--wide-right,
+      .opening-summary,
+      .load-story,
+      .closing,
+      .origin-track,
+      .decision-chain,
+      .experiment-loop,
+      .monetization-story,
+      .legacy-story,
+      .ownership-line,
+      .assurance-grid,
+      .financial-scope,
+      .concurrency-proof,
+      .economics-layout,
+      .infra-compare,
+      .infra-bottom,
+      .ops-grid,
+      .long-term-close,
+      .response-time,
+      .oncall-intro,
+      .support-intro,
+      .oncall-followup,
+      .incident-review,
+      .oncall-flow,
+      .support-flow { grid-template-columns: 1fr; }
+      .oncall-arrow,
+      .support-arrow { transform: rotate(90deg); }
+      .facts-strip,
+      .result-grid,
+      .technical-notes { grid-template-columns: repeat(2, 1fr); }
+      .system-flow { grid-template-columns: 1fr; gap: 10px; }
+      .system-arrow { width: 1px; height: 24px; margin: auto; }
+      .system-arrow::after { top: auto; bottom: 0; right: -3px; transform: rotate(135deg); }
+      .lane { grid-template-columns: 1fr; gap: 8px; }
+      .lane__step + .lane__step { border-left: 1px solid var(--hairline); }
+      .lane__step:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -13px; }
+      .origin-step,
+      .decision,
+      .experiment-step { border-right: 0; border-bottom: 1px solid var(--hairline); padding-left: 0 !important; }
+      .experiment-step:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -10px; }
+      .load-compact { padding-left: 0; border-left: 0; }
+      .case02-page .page-content { display: block; }
+      .case02-cover .page-content { display: flex; }
+      .case02-cover h1 { font-size: 42px; }
+      .case02-cover__proofs { grid-template-columns: 1fr; margin-top: 34px; }
+      .case02-cover__proof + .case02-cover__proof { border-left: 0; border-top: 1px solid var(--hairline); }
+      .case02-scope-strip { grid-template-columns: repeat(2, 1fr); }
+      .case02-entry-grid,
+      .case02-release-layout,
+      .case02-release-proof,
+      .case02-impact-layout,
+      .case02-impact-close,
+      .case02-refactor-decision,
+      .case02-refactor-principle,
+      .case02-refactor-model__head,
+      .case02-refactor-pair,
+      .case02-scale-brief,
+      .case02-initiative-layout,
+      .case02-initiative-platform__head,
+      .case02-initiative-capabilities { grid-template-columns: 1fr; }
+      .case02-release-layout,
+      .case02-impact-layout,
+      .case02-refactor-model { display: block; max-height: none; min-height: 0; }
+      .case02-impact-work { margin-top: 20px; }
+      .case02-refactor-decision__time { padding: 16px 0 0; border-left: 0; border-top: 1px solid var(--hairline); }
+      .case02-refactor-link { min-height: 34px; border-left: 0; border-right: 0; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); transform: rotate(90deg); }
+      .case02-metric-row { grid-template-columns: 1fr; gap: 12px; padding: 18px 0; }
+      .case02-metric-value { padding-left: 0; border-left: 0; }
+      .case02-metric-arrow { transform: rotate(90deg); }
+      .case02-scale-results { grid-template-columns: 1fr; }
+      .case02-scale-results div + div { border-left: 0; border-top: 1px solid var(--hairline); }
+      .case02-initiative-capability + .case02-initiative-capability { padding-left: 0; border-left: 0; }
+    }
+
+    @media print {
+      @page { size: A4 portrait; margin: 0; }
+      html, body {
+        background: var(--paper) !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      .casebook { display: block; padding: 0; }
+      .version-switcher,
+      .version-preview-frame { display: none !important; }
+      .page {
+        width: 210mm;
+        height: 297mm;
+        min-height: 0;
+        margin: 0;
+        border: 0;
+        box-shadow: none;
+        break-after: page;
+        page-break-after: always;
+      }
+      .page:last-child { break-after: auto; page-break-after: auto; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="version-switcher" aria-label="Переключение версий HTML">
+    <span class="version-switcher__label">Версии</span>
+    <button type="button" id="version-prev" aria-label="Более ранняя версия" title="Более ранняя версия">←</button>
+    <select id="version-select" aria-label="Выбрать версию">
+      <option value="ai-product-case-editorial-01.html">Версия 1</option>
+      <option value="ai-product-case-editorial-02.html">Версия 2</option>
+      <option value="ai-product-case-editorial-03.html">Версия 3</option>
+      <option value="ai-product-case-editorial-04.html">Версия 4</option>
+      <option value="ai-product-case-editorial-05.html">Версия 5</option>
+      <option value="ai-product-case-editorial-06.html">Версия 6</option>
+      <option value="ai-product-case-editorial-07.html">Версия 7</option>
+      <option value="ai-product-case-editorial-08.html">Версия 8</option>
+      <option value="ai-product-case-editorial-09.html">Версия 9</option>
+      <option value="ai-product-case-editorial-10.html">Версия 10</option>
+      <option value="ai-product-case-editorial-11.html">Версия 11</option>
+      <option value="ai-product-case-editorial-12.html">Версия 12</option>
+      <option value="ai-product-case-editorial-13.html">Версия 13</option>
+      <option value="ai-product-case-editorial-14.html">Версия 14</option>
+      <option value="ai-product-case-editorial-15.html">Версия 15</option>
+      <option value="ai-product-case-editorial-16.html">Версия 16</option>
+      <option value="ai-product-case-editorial-17.html">Версия 17</option>
+      <option value="ai-product-case-editorial-18.html">Версия 18</option>
+      <option value="ai-product-case-editorial-19.html">Версия 19</option>
+      <option value="ai-product-case-editorial-20.html">Версия 20</option>
+      <option value="ai-product-case-editorial-21.html">Версия 21</option>
+      <option value="ai-product-case-editorial-22.html">Версия 22</option>
+      <option value="ai-product-case-editorial-23.html">Версия 23</option>
+      <option value="ai-product-case-editorial-24.html">Версия 24</option>
+      <option value="ai-product-case-editorial-25.html">Версия 25</option>
+      <option value="ai-product-case-editorial-26.html">Версия 26</option>
+      <option value="ai-product-case-editorial-27.html">Версия 27</option>
+      <option value="ai-product-case-editorial-28.html">Версия 28</option>
+      <option value="ai-product-case-editorial-29.html">Версия 29</option>
+      <option value="ai-product-case-editorial-30.html">Версия 30</option>
+      <option value="ai-product-case-editorial-31.html">Версия 31</option>
+      <option value="ai-product-case-editorial-32.html">Версия 32</option>
+      <option value="ai-product-case-editorial-33.html">Версия 33</option>
+      <option value="ai-product-case-editorial-34.html">Версия 34</option>
+      <option value="ai-product-case-editorial-35.html">Версия 35</option>
+      <option value="ai-product-case-editorial-36.html">Версия 36</option>
+      <option value="ai-product-case-editorial-37.html">Версия 37</option>
+      <option value="ai-product-case-editorial-38.html">Версия 38</option>
+      <option value="ai-product-case-editorial-39.html">Версия 39</option>
+      <option value="ai-product-case-editorial-40.html">Версия 40</option>
+      <option value="ai-product-case-editorial-41.html">Версия 41</option>
+      <option value="ai-product-case-editorial-42.html">Версия 42</option>
+      <option value="ai-product-case-editorial-43.html">Версия 43</option>
+      <option value="ai-product-case-editorial-44.html">Версия 44</option>
+      <option value="ai-product-case-editorial-45.html">Версия 45</option>
+      <option value="ai-product-case-editorial-46.html">Версия 46</option>
+      <option value="ai-product-case-editorial-47.html">Версия 47</option>
+      <option value="ai-product-case-editorial-48.html">Версия 48</option>
+      <option value="ai-product-case-editorial-49.html">Версия 49</option>
+      <option value="ai-product-case-editorial-50.html">Версия 50</option>
+      <option value="ai-product-case-editorial-51.html">Версия 51</option>
+      <option value="ai-product-case-editorial-52.html">Версия 52</option>
+      <option value="ai-product-case-editorial-53.html">Версия 53</option>
+      <option value="ai-product-case-editorial-54.html">Версия 54</option>
+      <option value="ai-product-case-editorial-55.html">Версия 55</option>
+      <option value="ai-product-case-editorial-56.html">Версия 56</option>
+      <option value="ai-product-case-editorial-57.html">Версия 57</option>
+      <option value="ai-product-case-editorial-58.html">Версия 58</option>
+      <option value="ai-product-case-editorial-59.html">Версия 59</option>
+      <option value="ai-product-case-editorial-60.html">Версия 60</option>
+      <option value="ai-product-case-editorial-61.html">Версия 61</option>
+      <option value="ai-product-case-editorial-62.html">Версия 62</option>
+      <option value="ai-product-case-editorial-63.html">Версия 63</option>
+      <option value="ai-product-case-editorial-64.html">Версия 64</option>
+      <option value="ai-product-case-editorial-65.html">Версия 65</option>
+      <option value="ai-product-case-editorial-66.html">Версия 66</option>
+      <option value="ai-product-case-editorial-67.html">Версия 67</option>
+      <option value="ai-product-case-editorial-68.html">Версия 68</option>
+      <option value="ai-product-case-editorial-69.html">Версия 69</option>
+      <option value="ai-product-case-editorial-70.html">Версия 70</option>
+      <option value="ai-product-case-editorial-71.html">Версия 71</option>
+      <option value="ai-product-case-editorial-72.html">Версия 72</option>
+      <option value="ai-product-case-editorial-73.html">Версия 73</option>
+      <option value="" selected>Актуальная</option>
+    </select>
+    <button type="button" id="version-next" aria-label="Более новая версия" title="Более новая версия">→</button>
+  </aside>
+  <iframe class="version-preview-frame" id="version-preview-frame" title="Предпросмотр выбранной версии"></iframe>
+
+  <main class="casebook">
+    <article class="page opening" id="case-01-page-1">
+      <header class="running-head">
+        <img class="logo" src="../../brandbook/assets/logo/algorana-logo-primary.svg" alt="Algorana" width="1710" height="197" />
+        <span class="signal">Кейс 01 · AI-сервис · NDA</span>
+      </header>
+
+      <div class="page-content">
+        <div class="kicker">От продуктовой гипотезы до 1M+ пользователей</div>
+        <h1>Начали с идеи, для которой ещё не было готового рынка</h1>
+        <p class="standfirst">
+          В 2022 году клиент пришёл с идеей онлайн-стилиста: пользователь загружает
+          свою фотографию и примеряет разные визуальные образы. Прямых работающих
+          аналогов не было, а сама категория массовых продуктов на основе генеративного
+          контента только начинала формироваться. Готовый план развития и проверенную
+          бизнес-модель предстояло найти вместе с рынком.
+        </p>
+
+        <section class="opening-summary">
+          <div class="opening-story">
+            <div class="section-label"><span>Исходная идея</span> Онлайн-стилист по фотографии</div>
+            <p>
+              Нельзя было разобрать готовый продукт, повторить привычную архитектуру
+              или выбрать проверенный стек. Одновременно с первой версией мы выясняли,
+              какие сценарии нужны пользователям, какие модели готовы к реальной нагрузке
+              и как построить вокруг них устойчивый сервис.
+            </p>
+            <p>
+              Мы подключились до первой версии и взяли на себя полную техническую
+              ответственность: web и mobile, backend, данные, AI-контур,
+              инфраструктуру, релизы и эксплуатацию.
+            </p>
+          </div>
+
+          <aside class="hero-number">
+            <div class="hero-number__value">1M<span>+</span></div>
+            <p>уникальных пользователей суммарно по всем платформам</p>
+            <div class="hairline"></div>
+            <p style="margin-top:13px">Примерно за два года от исходной гипотезы. Название продукта не раскрывается из-за NDA.</p>
+          </aside>
+        </section>
+
+        <section class="origin-track" aria-label="Объём развития продукта">
+          <article class="origin-step">
+            <div class="origin-step__year">Поиск продукта</div>
+            <div class="origin-step__value">100+</div>
+            <h3>проверенных гипотез</h3>
+            <p>Часть стала продуктом. Часть была закрыта после проверки на реальных пользователях.</p>
+          </article>
+          <article class="origin-step">
+            <div class="origin-step__year">Объём разработки</div>
+            <div class="origin-step__value">1000+</div>
+            <h3>продуктовых и технических изменений</h3>
+            <p>Новые сценарии, перестройка существующих функций и изменения архитектуры.</p>
+          </article>
+          <article class="origin-step">
+            <div class="origin-step__year">Трансформация бизнеса</div>
+            <div class="origin-step__value">Несколько</div>
+            <h3>смен продукта и монетизации</h3>
+            <p>От онлайн-стилиста — к генератору медиа-контента; от подписки — к комбинированной модели.</p>
+          </article>
+        </section>
+
+        <p class="story-bridge">За этими цифрами — не прямой путь по готовому плану. Мы строили, проверяли, закрывали гипотезы и перестраивали архитектуру, пока продукт продолжал работать.</p>
+      </div>
+
+      <footer class="running-foot">
+        <span>Algorana · Casebook</span>
+        <span>01 / 06</span>
+      </footer>
+    </article>
+
+    <article class="page" id="case-01-page-2">
+      <header class="running-head">
+        <span>Algorana · Case 01</span>
+        <span class="signal">Глава 01 · Работа в условиях изменений</span>
+      </header>
+
+      <div class="page-content">
+        <div class="kicker">100+ гипотез · продуктовые решения по данным</div>
+        <h2>Мы строили продукт, проверяли его на рынке — и иногда разбирали уже сделанное</h2>
+        <p class="standfirst">
+          Требования становились понятнее только после запуска очередной версии.
+          Одни сценарии превращались в основу продукта, другие успевали попасть
+          в приложение и теряли актуальность после следующего эксперимента.
+        </p>
+
+        <section class="experiment-loop" aria-label="Цикл проверки продуктовых гипотез">
+          <article class="experiment-step">
+            <div class="experiment-step__index">01 · ГИПОТЕЗА</div>
+            <h3>Выбирали вопрос</h3>
+            <p>Какой сценарий нужен пользователю и какую бизнес-модель стоит проверить.</p>
+          </article>
+          <article class="experiment-step">
+            <div class="experiment-step__index">02 · РЕАЛИЗАЦИЯ</div>
+            <h3>Доводили до пользователей</h3>
+            <p>Строили работающую часть продукта, а не отдельную демонстрацию.</p>
+          </article>
+          <article class="experiment-step">
+            <div class="experiment-step__index">03 · ДАННЫЕ</div>
+            <h3>Смотрели на результат</h3>
+            <p>Оценивали поведение пользователей, экономику и ограничения моделей.</p>
+          </article>
+          <article class="experiment-step">
+            <div class="experiment-step__index">04 · РЕШЕНИЕ</div>
+            <h3>Оставляли или меняли</h3>
+            <p>Рабочее развивали. Слабое переделывали или безопасно выводили из продукта.</p>
+          </article>
+        </section>
+
+        <section class="monetization-story">
+          <div>
+            <div class="section-label"><span>Продукт</span> Самая заметная трансформация</div>
+            <p class="monetization-story__lead">От онлайн-стилиста с одной основной механикой — к генератору медиа-контента.</p>
+            <p>Теперь пользователь выбирает пресет и создаёт изображения или видео. За каждым пресетом стоит своя цепочка моделей и операций. AI-редактирование изображений — один из таких сценариев, а не описание всего продукта.</p>
+          </div>
+          <div>
+            <div class="section-label"><span>Монетизация</span> Менялась вместе с продуктом</div>
+            <div class="monetization-path" aria-label="Изменение модели монетизации">
+              <div class="monetization-step"><div class="monetization-step__stage">Сначала</div><div><b>Подписка</b><span>Проверили регулярную модель доступа к продукту.</span></div></div>
+              <div class="monetization-step"><div class="monetization-step__stage">Затем</div><div><b>Оплата отдельных генераций</b><span>Перешли к прямой связи между использованием и списанием.</span></div></div>
+              <div class="monetization-step"><div class="monetization-step__stage">В итоге</div><div><b>Комбинированная модель</b><span>Подписка начисляет бонусы, дополнительные генерации оплачиваются отдельно.</span></div></div>
+            </div>
+            <p class="caption" style="margin-top:11px">Каждый переход затрагивал клиентские приложения, платежи, внутренние балансы, подписки, аналитику и уже работающих пользователей.</p>
+          </div>
+        </section>
+
+        <section class="legacy-story">
+          <p class="legacy-story__statement">Здесь legacy — не просто старый код. Это следы гипотез, которые успели стать продуктом, пройти проверку рынком и потерять актуальность.</p>
+          <div>
+            <div class="section-label"><span>Что это означало для разработки</span></div>
+            <p>Мы не могли начинать заново после каждого изменения стратегии. Приходилось выводить отработавшие сценарии, перестраивать архитектуру и внедрять новую бизнес-логику, пока сервис продолжал работать.</p>
+          </div>
+        </section>
+
+      </div>
+
+      <footer class="running-foot">
+        <span>Эксперименты, монетизация и накопленное legacy</span>
+        <span>02 / 06</span>
+      </footer>
+    </article>
+
+    <article class="page finance-page" id="case-01-page-3">
+      <header class="running-head">
+        <span>Algorana · Case 01</span>
+        <span class="signal">Глава 02 · Надёжность генераций и расчётов</span>
+      </header>
+
+      <div class="page-content">
+        <div class="kicker">Один пользовательский запрос · несколько моделей · один итог</div>
+        <h2>Генерация — не один API-вызов. Это операция, за которую платит пользователь</h2>
+        <p class="standfirst">
+          Сбой возможен на любом шаге, но итог должен оставаться однозначным:
+          результат получен и оплачен — либо процесс корректно завершён без списания.
+        </p>
+
+        <div class="promise-band">Начатая генерация не исчезает между сервисами без итогового статуса. Деньги пользователя проходят тот же контролируемый путь.</div>
+
+        <figure class="lane-diagram" aria-label="Связанные процессы генерации и расчётов">
+          <div class="lane">
+            <div class="lane__label">Генерация</div>
+            <div class="lane__step"><b>Запрос принят</b><span>По выбранному сценарию система собирает нужную цепочку обработки.</span></div>
+            <div class="lane__step"><b>Процесс не теряется</b><span>Состояние сохраняется; при временном сбое повторяется только нужный шаг.</span></div>
+            <div class="lane__step lane__step--split"><b>Процесс завершён</b><span>Получен результат либо зафиксирована контролируемая ошибка, включая отказ проверки безопасности.</span></div>
+          </div>
+          <div class="lane">
+            <div class="lane__label">Расчёт</div>
+            <div class="lane__step"><b>Проверяем правила</b><span>Тип баланса, тариф, бесплатный лимит или партнёрские условия.</span></div>
+            <div class="lane__step"><b>Фиксируем обязательство</b><span>Резервируем сумму либо отмечаем использование для будущего счёта.</span></div>
+            <div class="lane__step lane__step--split"><b>Завершаем расчёт</b><span>Успех подтверждает списание; ошибка освобождает резерв.</span></div>
+          </div>
+          <figcaption class="caption" style="margin-top:12px">В предоплатных сценариях сумма или бесплатный лимит резервируются до запуска моделей. В партнёрских интеграциях использование фиксируется для последующего счёта.</figcaption>
+        </figure>
+
+        <section class="financial-scope">
+          <article class="financial-scope__saga">
+            <div class="section-label"><span>Оркестрация генераций</span> Saga</div>
+            <h3>Сбой не обрывает генерацию. Новый flow собирается из готовых шагов</h3>
+            <div class="saga-benefits">
+              <div class="saga-benefit">
+                <div class="saga-benefit__label">Надёжность</div>
+                <b>Продолжаем с того же шага</b>
+                <p>Генерация разбита на независимые шаги, состояние сохраняется после каждого. Если сервер или внешний провайдер недоступен, система повторяет прерванный шаг и продолжает процесс после восстановления.</p>
+              </div>
+              <div class="saga-benefit">
+                <div class="saga-benefit__label">Скорость</div>
+                <b>Собираем новый flow из готовых блоков</b>
+                <p>Новая модель или идея не требует заново писать весь процесс. Команда комбинирует готовые шаги и добавляет только недостающее.</p>
+              </div>
+            </div>
+            <div class="saga-impact"><b>100+ гипотез</b><span>Оркестрация помогала быстрее превращать новые идеи в рабочие сценарии.</span></div>
+          </article>
+          <article class="financial-scope__billing">
+            <div class="section-label"><span>Собственный финансовый сервис</span> Разные точки входа</div>
+            <h3>Один контур — разные балансы и правила расчёта</h3>
+            <div class="billing-modes">
+              <div class="billing-mode"><div class="billing-mode__name">Пользователи</div><div><b>Подписки, бонусы и разовые покупки</b><span>Баланс учитывает разные источники пополнения и оплату отдельных генераций.</span></div></div>
+              <div class="billing-mode"><div class="billing-mode__name">API-кабинет</div><div><b>Отдельный предоплаченный баланс и собственные тарифы</b><span>Стоимость одной генерации снижается по мере роста объёма использования API.</span></div></div>
+              <div class="billing-mode"><div class="billing-mode__name">Партнёры</div><div><b>Учёт фактических генераций и последующий счёт</b><span>Расчёты ведутся по отдельно согласованным партнёрским условиям.</span></div></div>
+            </div>
+            <div class="balance-assurance">
+              <b>Баланс остаётся корректным при любом исходе</b>
+              <span>До запуска система проверяет доступные средства или лимит. Успешная генерация завершает расчёт, ошибка возвращает резерв, а параллельные запросы не позволяют потратить больше доступного.</span>
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <footer class="running-foot">
+        <span>Оркестрация генераций и разные модели расчёта</span>
+        <span>03 / 06</span>
+      </footer>
+    </article>
+
+    <article class="page infra-page" id="case-01-page-4">
+      <header class="running-head">
+        <span>Algorana · Case 01</span>
+        <span class="signal">Глава 03 · Экономика и масштабирование</span>
+      </header>
+
+      <div class="page-content">
+        <div class="kicker">Инфраструктура менялась вслед за продуктом и его нагрузкой</div>
+        <h2>Сначала важнее было запуститься. Потом — не переплачивать за рост</h2>
+        <p class="standfirst">
+          Первые собственные генерационные flow запускали на GPU RunPod — это позволило выйти
+          в рабочий сервис без своей инфраструктуры. Затем добавились frontier-модели через внешние API,
+          а с ростом постоянной нагрузки часть собственных flow перенесли на свои GPU.
+        </p>
+
+        <section class="gpu-strategy">
+          <article class="runpod-story">
+            <div class="section-label"><span>01 · Инженерная инициатива</span> RunPod</div>
+            <h3>Бизнесу принесли не проблему, а готовое решение</h3>
+            <p>
+              На старте собственные GPU не сходились по экономике. Мы изучили рынок,
+              сравнили несколько вариантов, сами нашли RunPod, провели переговоры
+              и рассчитали схему запуска. RunPod предложил лучшие условия — бизнес
+              получил готовый вариант с понятной стоимостью и рисками.
+            </p>
+            <p>
+              После запуска проект стал одним из первых крупных клиентов RunPod. Мы взяли
+              на себя интеграцию и всю работу с провайдером: инженерные команды вместе
+              разбирали инциденты, сверяли данные мониторинга и обсуждали развитие платформы.
+            </p>
+            <div class="runpod-proof">
+              <b>Сегодня RunPod — платформа для 1M+ разработчиков</b>
+              <span>Наш прямой контакт с командой провайдера сохраняется до сих пор.</span>
+            </div>
+          </article>
+
+          <aside class="gpu-result">
+            <div class="section-label"><span>02 · Выбор под задачу</span> Frontier и open-source</div>
+            <h3>Frontier-модели не заменили open-source — они дополнили их</h3>
+            <div class="model-types" aria-label="Типы генеративных моделей в продукте">
+              <div class="model-type">
+                <div class="model-type__label">Frontier-модели</div>
+                <b>Когда качество стало решающим</b>
+                <span>Со временем frontier-модели заметно выросли в качестве. Бизнесу понадобилось подключать их через внешние API для новых пользовательских сценариев.</span>
+              </div>
+              <div class="model-type">
+                <div class="model-type__label">Собственные flow</div>
+                <b>Когда важны дообучение и контроль пайплайна</b>
+                <span>Open-source модели адаптировали через LoRA, использовали как отдельные шаги сложных flow и сохраняли для задач, где они давали сильный результат.</span>
+                <div class="model-chain"><span>Готовые веса</span><span>LoRA</span><span>ComfyUI</span><span>Docker</span></div>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="infra-evidence">
+          <article class="gpu-scale-story">
+            <div class="section-label"><span>03 · Экономика нагрузки</span> GPU-кластер</div>
+            <h3>Свои GPU стали выгоднее при стабильной нагрузке</h3>
+            <p>Развернули кластер, мониторинг доступности и балансировку по очереди и времени генерации.</p>
+            <div class="gpu-result__metric">
+              <b>3–5×</b>
+              <div>
+                <span>снизились затраты на инфраструктуру генераций</span>
+                <small>по сравнению с полностью облачной схемой</small>
+              </div>
+            </div>
+            <div class="cluster-route" aria-label="Балансировка между собственным GPU-кластером и RunPod">
+              <div class="cluster-route__node">
+                <small>Приоритет</small>
+                <b>Свои GPU</b>
+                <span>Максимальная загрузка, пока очередь укладывается в SLA.</span>
+              </div>
+              <div class="cluster-route__arrow">→</div>
+              <div class="cluster-route__node">
+                <small>Overflow и резерв</small>
+                <b>RunPod</b>
+                <span>Забирает нагрузку при нехватке мощности или сбое.</span>
+              </div>
+            </div>
+            <div class="cluster-note">Балансировка не даёт своим GPU простаивать и автоматически уводит overflow в RunPod.</div>
+          </article>
+
+          <article class="routing-card">
+            <div class="section-label"><span>04 · Гибридный контур</span> Балансировка и резерв</div>
+            <h3>Свели свои GPU, RunPod и внешние API в одну систему</h3>
+            <p>Для каждого типа генерации предусмотрели основной и резервный маршрут. Инфраструктуру меняли по мере роста продукта, не перестраивая пользовательские сценарии.</p>
+            <div class="routing-lanes" aria-label="Два контура балансировки генераций">
+              <div class="routing-lane">
+                <div class="routing-lane__label">Кастомные flow</div>
+                <div><b>Свои GPU <i>↔</i> RunPod Serverless</b><span>Базовая нагрузка — на своих серверах; RunPod — для пиков и резерва.</span></div>
+              </div>
+              <div class="routing-lane">
+                <div class="routing-lane__label">Frontier-модели</div>
+                <div><b>fal.ai <i>↔</i> ByteDance и другие API</b><span>Для внешних моделей — свой приоритет провайдеров и резервный маршрут.</span></div>
+              </div>
+            </div>
+            <div class="routing-note">Приоритеты меняли под условия периода — пользовательский flow оставался прежним.</div>
+          </article>
+        </section>
+
+      </div>
+
+      <footer class="running-foot">
+        <span>Модели, провайдеры и гибридный GPU-контур</span>
+        <span>04 / 06</span>
+      </footer>
+    </article>
+
+    <article class="page campaign-page" id="case-01-page-5">
+      <header class="running-head">
+        <span>Algorana · Case 01</span>
+        <span class="signal">Глава 04 · Подготовка к росту</span>
+      </header>
+
+      <div class="page-content">
+        <div class="kicker">После 100+ гипотез бизнес был готов перейти от экспериментов к масштабированию</div>
+        <h2>Бизнес нашёл точку роста. Мы не должны были стать узким местом</h2>
+        <p class="standfirst">
+          Пользователи уже стабильно генерировали, а бизнес был готов кратно увеличить рекламный бюджет.
+          Если бы система не выдержала пик, деньги на привлечение ушли бы впустую: новые пользователи
+          не получили бы результат, бизнес — потенциальную выручку, а приложение — их доверие.
+          Нам нужно было быть уверенными, что система выдержит этот рост.
+        </p>
+
+        <section class="campaign-page-layout">
+          <article class="campaign-context">
+            <div class="section-label"><span>Точка масштабирования</span> Продукт и маркетинг</div>
+            <h3>Работающий сценарий перестал быть гипотезой</h3>
+            <p>Продукт уже нашёл свою аудиторию: пользователи стабильно запускали генерации, а канал привлечения давал повторяемый результат. Обычная нагрузка росла вместе с бизнесом.</p>
+            <div class="campaign-context__fact">
+              <small>Следующий шаг · burst-кампания</small>
+              <b>Пик без плавного разгона</b>
+              <span>Кампанию планировали вместе с маркетингом заранее, но её формат не предполагал плавного роста. Резкое расширение охвата и возможный вирусный эффект могли поднять поток до ×10 в течение часа — именно к такому сценарию готовили систему.</span>
+            </div>
+          </article>
+
+          <article class="campaign-proof">
+            <div class="section-label"><span>Инженерный ответ</span> Проверка реальной нагрузкой</div>
+            <h3>Перевели маркетинговый план в проверяемую нагрузку</h3>
+            <div class="campaign-proof__body">
+              <div class="campaign-scale" aria-label="Подготовка к росту нагрузки">
+                <div class="campaign-stage campaign-stage--baseline"><b>X RPS</b><span>рабочая нагрузка</span></div>
+                <div class="campaign-arrow">→</div>
+                <div class="campaign-stage campaign-stage--target"><b>×10</b><span>цель кампании</span></div>
+                <div class="campaign-arrow">→</div>
+                <div class="campaign-stage campaign-stage--limit"><b>×100</b><span>проверенный запас</span></div>
+              </div>
+              <div class="campaign-baseline"><b>X RPS — фактическая нагрузка сервиса</b><span>Сервис уже обрабатывал устойчивый поток генераций каждую секунду — масштабировались не от нуля. Абсолютное значение скрыто по NDA.</span></div>
+            </div>
+          </article>
+        </section>
+
+        <section class="campaign-validation">
+          <div class="section-label"><span>Как получили уверенность</span> Сценарные нагрузочные тесты</div>
+          <div class="campaign-validation__header">
+            <h3>Нагрузку собрали по поведению реальных пользователей</h3>
+            <p>По графикам и событиям рабочего сервиса восстановили частоту и последовательность действий. Затем повторили тот же рисунок в тесте — вместе с авторизацией, балансами, продуктовыми API и генерационным контуром.</p>
+          </div>
+
+          <div class="campaign-validation__flow" aria-label="Подготовка сценарного нагрузочного теста">
+            <div class="campaign-validation__step"><small>01 · Собрали</small><b>Профиль нагрузки</b><span>Восстановили поведение пользователей по данным сервиса.</span></div>
+            <div class="campaign-validation__arrow">→</div>
+            <div class="campaign-validation__step"><small>02 · Воспроизвели</small><b>Пользовательский путь</b><span>Авторизация, баланс, API и генерации — в одном тесте.</span></div>
+            <div class="campaign-validation__arrow">→</div>
+            <div class="campaign-validation__step campaign-validation__step--target"><small>03 · Проверили</small><b>×10 — план кампании</b><span>Подтвердили, что система выдержит ожидаемый рекламный пик.</span></div>
+            <div class="campaign-validation__arrow">→</div>
+            <div class="campaign-validation__step campaign-validation__step--reserve"><small>04 · Перестраховались</small><b>×100 — запас</b><span>Проверили предел намного выше бизнес-прогноза.</span></div>
+          </div>
+
+          <div class="campaign-validation__proof">
+            <b>Отдельный бюджет на реальные генерации</b>
+            <span>Нагрузку прогнали через собственные GPU, облачный GPU-резерв и API frontier-моделей. Так проверили весь путь до провайдеров и убедились, что генерационный контур не станет узким местом.</span>
+          </div>
+        </section>
+
+      </div>
+
+      <footer class="running-foot">
+        <span>Подготовка рекламного пика реальными генерациями</span>
+        <span>05 / 06</span>
+      </footer>
+    </article>
+
+    <article class="page ops-page" id="case-01-page-6">
+      <header class="running-head">
+        <span>Algorana · Case 01</span>
+        <span class="signal">Глава 05 · Поддержка и эксплуатация</span>
+      </header>
+
+      <div class="page-content">
+        <div class="kicker">Ответственность после релиза</div>
+        <h2>Самый дорогой сбой — тот, о котором бизнес ещё не знает</h2>
+        <p class="standfirst">
+          Продуктом пользуется большая аудитория 24/7. Любая недоступность означает потерянных пользователей, выручку и доверие.
+          Для бизнеса самый неприятный сценарий — продолжать терять деньги, даже не зная, что сервис уже не работает.
+        </p>
+
+        <section class="oncall-block">
+          <div class="oncall-status">
+            <span>Контроль состояния сервиса</span>
+            <strong>24/7</strong>
+            <em>Ночью · в выходные · в любой день недели</em>
+          </div>
+          <div class="oncall-intro">
+            <h3>Проблему первой замечает система — не пользователь</h3>
+            <p>Мониторинг отслеживает состояние сервиса, а автоматический дозвон и эскалация гарантируют, что сигнал дойдёт до ответственного инженера. Предельное время от обнаружения проблемы до начала реакции — пять минут.</p>
+          </div>
+
+          <div class="oncall-flow" aria-label="Реакция на инцидент">
+            <div class="oncall-step"><small>01 · Обнаружили</small><b>Сигнал мониторинга</b><span>Система сама фиксирует отклонение в работе сервиса.</span></div>
+            <div class="oncall-arrow">→</div>
+            <div class="oncall-step"><small>02 · Связались</small><b>Автоматический дозвон</b><span>Дежурный получает вызов, а не ждёт сообщения в чате.</span></div>
+            <div class="oncall-arrow">→</div>
+            <div class="oncall-step"><small>03 · Подстраховали</small><b>Эскалация без паузы</b><span>Нет ответа — система вызывает следующего инженера.</span></div>
+            <div class="oncall-arrow">→</div>
+            <div class="oncall-step oncall-step--response"><small>04 · Начали реакцию</small><b>≤5 мин</b><span>Предельное время от сигнала до начала работы.</span></div>
+          </div>
+
+          <div class="oncall-followup">
+            <div class="section-label"><span>Культура работы с инцидентами</span> Каждый случай превращается в улучшение системы</div>
+            <div class="incident-review">
+              <div class="incident-review__step"><small>01 · Приоритет</small><b>Определяем критичность</b><span>Задаём приоритет и как можно быстрее устраняем влияние на пользователей.</span></div>
+              <div class="incident-review__step"><small>02 · Разбор</small><b>Пишем постмортем</b><span>Ищем первопричину и определяем, что изменить, чтобы случай не повторился.</span></div>
+              <div class="incident-review__step"><small>03 · Улучшение</small><b>Проверяем мониторинг</b><span>Если узнали не из алерта, закрываем пробел и добавляем нужный сигнал.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="support-block">
+          <div class="section-label"><span>AI — первая линия</span> Пользовательская поддержка</div>
+          <div class="support-intro">
+            <h3>До инженера доходит уже подготовленный кейс</h3>
+            <p>Типовые вопросы AI закрывает сразу. В сложных случаях он уточняет проблему и заранее собирает необходимые данные. Инженер получает подготовленный кейс без шаблонной переписки — команда тратит меньше времени на поддержку и быстрее переходит к разбору.</p>
+          </div>
+
+          <div class="support-flow" aria-label="Обработка пользовательского обращения">
+            <div class="support-step"><small>01 · Обращение</small><b>AI принимает вопрос</b><span>Закрывает типовой запрос или уточняет проблему.</span></div>
+            <div class="support-arrow">→</div>
+            <div class="support-step"><small>02 · Контекст</small><b>Заранее собирает данные</b><span>Запрашивает всё необходимое для технического разбора.</span></div>
+            <div class="support-arrow">→</div>
+            <div class="support-step"><small>03 · Разбор</small><b>Передаёт сложный случай</b><span>Инженер получает уже структурированный кейс.</span></div>
+          </div>
+        </section>
+
+      </div>
+
+      <footer class="running-foot">
+        <span>Поддержка пользователей · дежурство 24/7 · долгосрочная ответственность</span>
+        <span>06 / 06</span>
+      </footer>
+    </article>
+
+    <article class="page case02-page case02-cover" id="case-02-cover">
+      <header class="running-head">
+        <span>ALGORANA · CASE 02</span>
+        <span class="signal">НОВЫЙ КЕЙС · МОБИЛЬНЫЙ КАНАЛ</span>
+      </header>
+
+      <div class="page-content">
+        <div class="case02-cover__meta">
+          <span>Кейс 02</span>
+          <em>Крупный федеральный омниканальный ритейлер · NDA</em>
+        </div>
+
+        <h1>Вернули бизнесу мобильный канал, который снова можно развивать</h1>
+        <p class="case02-cover__lead">
+          Приложение уже было в сторах, но накопленные дефекты и непредсказуемость изменений заблокировали новые релизы.
+          Мы приняли полную техническую ответственность: сначала вернули безопасные релизы, затем подготовили систему к росту.
+        </p>
+
+        <div class="case02-cover__proofs" aria-label="Ключевые результаты кейса">
+          <div class="case02-cover__proof">
+            <strong>1 месяц</strong>
+            <span>до первого релиза новой команды</span>
+          </div>
+          <div class="case02-cover__proof">
+            <strong>×8</strong>
+            <span>рост объёма данных за четыре месяца</span>
+          </div>
+          <div class="case02-cover__proof">
+            <strong>70% → 10%</strong>
+            <span>загрузка CPU базы после этого роста</span>
+          </div>
+        </div>
+      </div>
+
+      <footer class="running-foot">
+        <span>Кейс 02 · мобильный канал крупного ритейлера</span>
+        <span>01 / 05</span>
+      </footer>
+    </article>
+
+    <article class="page case02-page case02-opening" id="case-02-page-1">
+      <header class="running-head">
+        <span>ALGORANA · CASE 02</span>
+        <span class="signal">ГЛАВА 01 · ПЕРЕДАЧА ПРОДУКТА</span>
+      </header>
+
+      <div class="page-content">
+        <div class="kicker">Точка входа · продукт и кодовая база созданы до нас</div>
+        <h2>Проблемы вынудили бизнес сменить команду. Мы взяли ответственность за чужой код и живой продукт</h2>
+        <p class="standfirst">
+          Мы подключились, когда предыдущая команда уже не могла назвать ни сроков исправления известных ошибок, ни сроков новых доработок.
+          Релизы фактически остановились — именно поэтому бизнес решил сменить подрядчика.
+          Нам передали работающий продукт вместе с чужой кодовой базой, архитектурой и накопленными рисками; мы приняли за него полную техническую ответственность.
+        </p>
+
+        <div class="case02-scope-label">Периметр, который передали новой команде</div>
+        <div class="case02-scope-strip" aria-label="Зона ответственности">
+          <span><b>01</b>iOS</span>
+          <span><b>02</b>Android</span>
+          <span><b>03</b>Backend</span>
+          <span><b>04</b>Инфраструктура</span>
+          <span><b>05</b>Мониторинг</span>
+          <span><b>06</b>Тесты и релизы</span>
+        </div>
+
+        <div class="case02-entry-grid">
+          <section class="case02-entry-card case02-entry-card--business">
+            <div class="section-label"><span>Что было снаружи</span> Мобильный канал уже запущен</div>
+            <h3>Продукт есть. Предсказуемого развития — нет</h3>
+            <p>Приложение уже было у пользователей, но мобильный канал отставал от сайта по функциям и ассортименту. Любая следующая доработка упиралась не в приоритет бизнеса, а в состояние кодовой базы.</p>
+            <div class="case02-stall">
+              <small>На момент передачи</small>
+              <strong>Релизы уже были остановлены</strong>
+              <span>Бизнес искал новую команду, потому что не мог безопасно исправлять ошибки и продолжать развитие приложения.</span>
+            </div>
+          </section>
+
+          <section class="case02-entry-card">
+            <div class="section-label"><span>Что было внутри</span> Система без запаса</div>
+            <div class="case02-state-list">
+              <div class="case02-state-row">
+                <small>Среда</small>
+                <div><b>Нет отдельного тестового контура</b><span>Серверная часть выкатывалась сразу в рабочую среду.</span></div>
+              </div>
+              <div class="case02-state-row">
+                <small>Контроль</small>
+                <div><b>Нет мониторинга и алертов</b><span>О проблеме узнавали при ручной проверке или от пользователей.</span></div>
+              </div>
+              <div class="case02-state-row">
+                <small>Каталог</small>
+                <div><b>Только часть ассортимента</b><span>В приложение попадали лишь позиции, доступные прямо сейчас.</span></div>
+              </div>
+              <div class="case02-state-row case02-state-row--risk">
+                <small>База</small>
+                <div><b>≈70% CPU</b><span>Стабильная загрузка ещё до роста каталога и любых пиков.</span></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <footer class="running-foot">
+        <span>Передача продукта · полная техническая ответственность</span>
+        <span>02 / 05</span>
+      </footer>
+    </article>
+
+    <article class="page case02-page case02-release-page" id="case-02-page-2">
+      <header class="running-head">
+        <span>ALGORANA · CASE 02</span>
+        <span class="signal">ГЛАВА 02 · ВОЗВРАЩЕНИЕ РЕЛИЗОВ</span>
+      </header>
+
+      <div class="page-content">
+        <div class="kicker">Сначала — вернуть управляемость</div>
+        <h2>Через месяц вернули релизы. Через три — уверенность в них</h2>
+        <p class="standfirst">
+          Нельзя развивать продукт, если каждое обновление может неожиданно затронуть пользователей.
+          Мы начали не с новых функций, а с условий, при которых изменения снова можно выпускать предсказуемо.
+        </p>
+
+        <div class="case02-release-layout">
+          <section class="case02-release-outcome">
+            <div class="section-label"><span>Результат для бизнеса</span> Управляемый выпуск изменений</div>
+            <h3>Релиз перестал быть отдельным кризисом</h3>
+            <p>Команда вернула бизнесу возможность планировать развитие мобильного канала, а не каждый раз заново решать, можно ли вообще выпускать обновление.</p>
+
+            <div class="case02-release-metrics" aria-label="Сроки восстановления релизного процесса">
+              <div class="case02-release-metric"><strong>1 месяц</strong><span>первый релиз новой команды</span></div>
+              <div class="case02-release-metric"><strong>3 месяца</strong><span>устойчивый процесс без прежнего риска</span></div>
+              <div class="case02-release-metric"><strong>≈1 релиз</strong><span>в месяц — текущий ритм обновлений</span></div>
+            </div>
+          </section>
+
+          <section class="case02-release-controls">
+            <div class="section-label"><span>Почему это повторяемо</span> Контроль вместо надежды</div>
+            <div class="case02-release-control">
+              <small>01 · Среда</small>
+              <div><h3>Проверяем изменения до пользователей</h3><p>Развернули отдельный тестовый контур: серверная часть больше не выкатывается сразу в рабочую среду.</p></div>
+            </div>
+            <div class="case02-release-control">
+              <small>02 · Качество</small>
+              <div><h3>Решение о выпуске опирается на прохождение критического регресса</h3><p>Зафиксировали сценарии, сбой в которых блокирует релиз, и встроили их проверку в процесс.</p></div>
+            </div>
+            <div class="case02-release-control">
+              <small>03 · Контроль</small>
+              <div><h3>Состояние системы видно до и после релиза</h3><p>Базовые метрики и алерты постепенно расширили по мере погружения в продукт и реальные инциденты.</p></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="case02-release-proof">
+          <h3>Инцидентов не стало больше — <strong>мы перестали узнавать о них случайно</strong></h3>
+          <p>Мониторинг подсветил кратковременные отказы и сетевые проблемы между мобильным контуром и основной системой. Команда начала находить отклонения сама, а не ждать сообщения пользователя.</p>
+        </section>
+      </div>
+
+      <footer class="running-foot">
+        <span>Тестовая среда · мониторинг · регресс · ежемесячные релизы</span>
+        <span>03 / 05</span>
+      </footer>
+    </article>
+
+    <article class="page case02-page case02-refactor-page" id="case-02-page-3">
+      <header class="running-head">
+        <span>ALGORANA · CASE 02</span>
+        <span class="signal">ГЛАВА 03 · РЕФАКТОРИНГ И РОСТ</span>
+      </header>
+
+      <div class="page-content">
+        <div class="kicker">Через четыре месяца · рефакторинг проверили ростом</div>
+        <h2>Рефакторинг сработал:<br>в 8 раз больше данных — при нагрузке на базу 10% вместо 70%</h2>
+        <p class="standfirst">
+          Бизнес хотел убрать ограничение мобильного канала и показать полный каталог.
+          Мы подготовили это изменение внутри регулярной разработки — без паузы в релизах и без ухудшения скорости для пользователей.
+        </p>
+
+        <div class="case02-impact-layout">
+          <section class="case02-impact-result">
+            <div class="section-label"><span>Измеримый результат</span> До / после</div>
+            <h3>Система выдержала рост без деградации</h3>
+            <p>Полный каталог стал первым крупным тестом плана рефакторинга, подготовленного в первый месяц работы.</p>
+
+            <div class="case02-impact-visual" aria-label="Состояние системы до и после оптимизации">
+              <div class="case02-impact-growth">
+                <small>Объём данных</small>
+                <div class="case02-impact-growth__line"><span>1×</span><i></i><strong>8×</strong></div>
+                <p>От ограниченного к полному каталогу.</p>
+              </div>
+              <div class="case02-impact-cpu">
+                <div class="case02-impact-cpu__head"><small>CPU базы</small><b>после роста данных в восемь раз</b></div>
+                <div class="case02-impact-bar case02-impact-bar--before"><span>До</span><i></i><strong>≈70%</strong></div>
+                <div class="case02-impact-bar case02-impact-bar--after"><span>После</span><i></i><strong>≤10%</strong></div>
+              </div>
+              <div class="case02-impact-infra">
+                <small>Серверы БД</small><strong>2</strong><i>→</i><strong>1</strong><span>Единый оптимизированный контур.</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="case02-impact-work">
+            <div class="section-label"><span>Что изменили</span> Приоритет — измеримый риск</div>
+            <div class="case02-impact-step">
+              <small>01 · Запросы</small>
+              <div><h3>Переписали тяжёлые запросы до расширения каталога</h3><p>Они создавали основную нагрузку уже при обычном объёме данных. Именно эта работа позволила увеличить каталог без нового скачка CPU.</p></div>
+            </div>
+            <div class="case02-impact-step">
+              <small>02 · Домен</small>
+              <div><h3>Сделали доменную модель понятнее</h3><p>Сократили неочевидные связи и убрали решения, из-за которых каждое следующее изменение затрагивало слишком много частей системы.</p></div>
+            </div>
+            <div class="case02-impact-step">
+              <small>03 · Контур</small>
+              <div><h3>Консолидировали данные на одном сервере базы</h3><p>После снижения нагрузки второй сервер стал не нужен: инфраструктура стала проще, дешевле и получила запас для пиков.</p></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="case02-impact-close">
+          <h3>Полный каталог вышел без остановки релизов</h3>
+          <p>Пользователи не заметили деградации, мобильный канал перестал отставать по ассортименту, а база — быть постоянным риском для следующего роста.</p>
+        </section>
+      </div>
+
+      <footer class="running-foot">
+        <span>Рост каталога · оптимизация базы · развитие без остановки</span>
+        <span>04 / 05</span>
+      </footer>
+    </article>
+
+    <article class="page case02-page case02-comms-page" id="case-02-page-4">
+      <header class="running-head">
+        <span>ALGORANA · CASE 02</span>
+        <span class="signal">ГЛАВА 04 · КОММУНИКАЦИИ И АНАЛИТИКА</span>
+      </header>
+
+      <div class="page-content">
+        <div class="kicker">После рефакторинга · инженерная инициатива</div>
+        <h2>Рефакторинг освободил руки: за три недели бизнес перестал платить за push-сервис</h2>
+        <p class="standfirst">
+          Первой инициативой после рефакторинга стала замена платной внешней зависимости, которая закрывала типовые push-рассылки и требовала постоянного внимания.
+          Мы сами предложили бизнесу заменить её внутренним решением и взяли реализацию целиком на себя.
+        </p>
+
+        <div class="case02-initiative-hero">
+          <section class="case02-initiative-story">
+            <div class="section-label"><span>Что предложили бизнесу</span> От идеи до запуска</div>
+            <h3>«Давайте потратим три недели — и больше не будем платить за эту зависимость»</h3>
+            <p>Внешняя подписка стоила денег, интеграция требовала постоянного внимания, а данные о коммуникациях оставались разрозненными. Мы оценили объём работ и принесли бизнесу конкретный план замены.</p>
+          </section>
+          <aside class="case02-initiative-score" aria-label="Результаты инициативы">
+            <small>От решения до запуска</small>
+            <strong>3 недели</strong>
+            <p>Оценили, реализовали и перевели рассылки на собственный сервис.</p>
+            <div class="case02-initiative-score__metrics">
+              <div><b>Сотни тысяч</b><span>push-сообщений ежедневно</span></div>
+              <div><b>0 ₽</b><span>на внешнюю подписку</span></div>
+            </div>
+          </aside>
+        </div>
+
+        <section class="case02-initiative-path">
+          <div class="section-label"><span>Как прошли путь</span> Увидели → обосновали → сделали</div>
+          <div class="case02-initiative-path__steps">
+            <div class="case02-initiative-path__step"><small>01 · Увидели</small><h4>Постоянный расход без стратегической ценности</h4><p>Типовые отправки не требовали отдельной сложной платформы.</p></div>
+            <div class="case02-initiative-path__step"><small>02 · Обосновали</small><h4>Разовая разработка вместо регулярной подписки</h4><p>Три недели на собственный сервис, перенос сценариев и запуск.</p></div>
+            <div class="case02-initiative-path__step"><small>03 · Сделали</small><h4>Запустили внутренний контур коммуникаций</h4><p>Перенесли рассылки, связали их с аналитикой и отключили подписку.</p></div>
+          </div>
+        </section>
+
+        <section class="case02-initiative-platform">
+          <div class="section-label"><span>Эффект шире экономии</span> Фундамент для коммуникаций</div>
+          <div class="case02-initiative-platform__head">
+            <h3>Логика и данные теперь внутри продукта</h3>
+            <p>Бизнес получил не просто бесплатную замену подписки. Собственный контур легче развивать, связывать с поведением пользователей и дополнять новыми каналами без ещё одной тяжёлой платформы.</p>
+          </div>
+          <div class="case02-initiative-network">
+            <div class="case02-initiative-node"><small>Уже работает</small><b>Массовые и триггерные push-рассылки</b><p>Единые сценарии внутри мобильного контура.</p></div>
+            <i class="case02-initiative-link" aria-hidden="true"></i>
+            <div class="case02-initiative-hub"><small>Собственный контур</small><b>Логика<br>+ данные</b></div>
+            <i class="case02-initiative-link" aria-hidden="true"></i>
+            <div class="case02-initiative-network__stack">
+              <div class="case02-initiative-node"><small>Измеряется</small><b>Путь от сообщения до покупки</b></div>
+              <div class="case02-initiative-node case02-initiative-node--future"><small>Можно развивать</small><b>In-app, SMS и новые каналы</b></div>
+            </div>
+          </div>
+          <div class="case02-case-conclusion">
+            <div>
+              <small>Итог кейса</small>
+              <strong>Не остановили бизнес ради переписывания. Вернули продукту способность развиваться</strong>
+            </div>
+            <span>Взяли ответственность за чужую проблемную кодовую базу, восстановили релизы, сняли главный риск роста и дошли до собственных инициатив, которые сокращают расходы и открывают новые возможности для мобильного канала.</span>
+          </div>
+        </section>
+      </div>
+
+      <footer class="running-foot">
+        <span>Инженерная инициатива · три недели до запуска · сотни тысяч push ежедневно</span>
+        <span>05 / 05</span>
+      </footer>
+    </article>
+  </main>
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const params = new URLSearchParams(window.location.search);
+
+      if (window.self !== window.top) root.classList.add('in-version-preview');
+      if (params.has('render')) root.classList.add('rendering');
+
+      const select = document.getElementById('version-select');
+      const frame = document.getElementById('version-preview-frame');
+      const previous = document.getElementById('version-prev');
+      const next = document.getElementById('version-next');
+
+      if (!select || !frame || !previous || !next) return;
+
+      let pendingScrollY = null;
+      let previewScrollY = 0;
+
+      const readScrollY = () => {
+        if (frame.style.display === 'block') return previewScrollY;
+        return window.scrollY || 0;
+      };
+
+      const restoreScrollY = (target, scrollY) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          try {
+            const documentRoot = target.document.documentElement;
+            const maxScroll = Math.max(0, documentRoot.scrollHeight - target.innerHeight);
+            target.scrollTo({ top: Math.min(Math.max(0, scrollY), maxScroll), behavior: 'auto' });
+          } catch (_) {
+            window.scrollTo({ top: scrollY, behavior: 'auto' });
+          }
+        }));
+      };
+
+      window.addEventListener('message', event => {
+        const data = event.data;
+        if (event.source !== frame.contentWindow || !data || data.type !== 'casebook-version-scroll') return;
+        previewScrollY = Number.isFinite(data.scrollY) ? data.scrollY : 0;
+      });
+
+      frame.addEventListener('load', () => {
+        if (pendingScrollY === null || !frame.contentWindow) return;
+        const scrollY = pendingScrollY;
+        pendingScrollY = null;
+        previewScrollY = scrollY;
+        frame.contentWindow.postMessage({
+          type: 'casebook-version-scroll-restore',
+          scrollY
+        }, '*');
+      });
+
+      const showVersion = index => {
+        const scrollY = readScrollY();
+        const safeIndex = Math.max(0, Math.min(index, select.options.length - 1));
+        select.selectedIndex = safeIndex;
+        const source = select.options[safeIndex].value;
+
+        if (source) {
+          pendingScrollY = scrollY;
+          previewScrollY = scrollY;
+          frame.src = source;
+          frame.style.display = 'block';
+          root.classList.add('version-preview-open');
+        } else {
+          pendingScrollY = null;
+          frame.removeAttribute('src');
+          frame.style.display = 'none';
+          root.classList.remove('version-preview-open');
+          restoreScrollY(window, scrollY);
+        }
+
+        previous.disabled = safeIndex === 0;
+        next.disabled = safeIndex === select.options.length - 1;
+      };
+
+      select.addEventListener('change', () => showVersion(select.selectedIndex));
+      previous.addEventListener('click', () => showVersion(select.selectedIndex - 1));
+      next.addEventListener('click', () => showVersion(select.selectedIndex + 1));
+      showVersion(select.selectedIndex);
+    })();
+  </script>
+  <script src="version-scroll-bridge.js"></script>
+</body>
+</html>
